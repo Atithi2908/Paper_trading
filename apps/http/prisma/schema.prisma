@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  balance  Float    @default(10000.0)
+  createdAt DateTime @default(now())
+
+  orders    Order[]
+  positions Position[]
+  trades   Trade[]
+  posts Post[]
+  comments Comment[]
+}
+
+model Post{
+  id        Int     @id @default(autoincrement())
+  userId    Int 
+  content  String
+  tags    String[]
+  createdAt DateTime @default(now())
+  likesCount Int     @default(0)
+  commentsCount Int  @default(0)
+  comments Comment[]
+    user           User     @relation(fields: [userId], references: [id])
+}
+
+ model Comment {
+  id       Int      @id @default(autoincrement())
+  postId    Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+    post           Post     @relation(fields: [postId], references: [id])
+    user           User     @relation(fields: [userId], references: [id])
+ }
+
+ model Stock {
+  id        Int      @id @default(autoincrement())
+  symbol    String   @unique 
+  name      String
+  exchange  String?          
+  currency  String?
+  type      String?         
+  createdAt DateTime @default(now())
+
+  orders    Order[]
+  positions Position[]
+  trades    Trade[]
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  stockId   Int
+
+  side      OrderSide        
+  type      OrderType        
+  quantity  Int
+  limitPrice Float?           
+
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  stock     Stock    @relation(fields: [stockId], references: [id])
+  trades    Trade[]
+}
+
+enum OrderSide {
+  BUY
+  SELL
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+}
+
+enum OrderStatus {
+  PENDING
+  EXECUTED
+  CANCELLED
+  PARTIAL
+}
+
+
+model Trade {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  userId    Int
+  stockId   Int
+
+  side      OrderSide
+  quantity  Int
+  price     Float          // EXECUTION PRICE
+  amount    Float          // quantity * price
+
+  createdAt DateTime @default(now())
+
+  user      User  @relation(fields: [userId], references: [id])
+  order     Order @relation(fields: [orderId], references: [id])
+  stock     Stock @relation(fields: [stockId], references: [id])
+}
+
+model Position {
+  id           Int     @id @default(autoincrement())
+  userId       Int
+  stockId      Int
+  quantity     Int     // current quantity user holds
+  avgBuyPrice  Float   // weighted average
+
+  user         User    @relation(fields: [userId], references: [id])
+  stock        Stock   @relation(fields: [stockId], references: [id])
+}
