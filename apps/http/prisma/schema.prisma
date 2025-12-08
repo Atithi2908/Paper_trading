@@ -27,6 +27,7 @@ model User {
   trades   Trade[]
   posts Post[]
   comments Comment[]
+  wallet   Wallet?
 }
 
 model Post{
@@ -109,8 +110,8 @@ model Trade {
 
   side      OrderSide
   quantity  Int
-  price     Float          // EXECUTION PRICE
-  amount    Float          // quantity * price
+  price     Float          
+  amount    Float          
 
   createdAt DateTime @default(now())
 
@@ -128,4 +129,34 @@ model Position {
 
   user         User    @relation(fields: [userId], references: [id])
   stock        Stock   @relation(fields: [stockId], references: [id])
+}
+
+model Wallet {
+  userId     Int       @id           
+  balance    Float     @default(0)
+  updatedAt  DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  transactions WalletTransaction[]
+}
+
+model WalletTransaction {
+  id           Int                 @id @default(autoincrement())
+  userId       Int
+  type         TransactionType
+  amount       Float              
+  balanceAfter Float
+  referenceId  Int?                
+  createdAt    DateTime            @default(now())
+
+  user Wallet @relation(fields: [userId], references: [userId])
+}
+
+enum TransactionType {
+  BUY
+  SELL
+  DEPOSIT
+  WITHDRAW
+  REFUND
+  FEE
 }

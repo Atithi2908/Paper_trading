@@ -109,7 +109,3 @@ export const getStockChartData = async (req:Request, res:Response) => {
 
 
 
-export const buyStock = async (req:Request, res:Response)=>{
-  
-
-}
