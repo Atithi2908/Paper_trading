@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import axios from "axios";
 const FINNHUB_BASE = "https://finnhub.io/api/v1";
 const FINNHUB_KEY = process.env.FINNHUB_API_KEY;
+import { prisma } from "../lib/prisma";
+
 
 export const getStockQuote = async (req: Request, res: Response) => {
     console.log("request to getStock ");
@@ -21,15 +23,15 @@ export const getStockQuote = async (req: Request, res: Response) => {
 export const getStockInfo = async (req: Request, res: Response) => {
   console.log("request came to get stock info");
   const { symbol } = req.params;
-  console.log("symbol is");
-  console.log(symbol);
+  //console.log("symbol is");
+  //console.log(symbol);
 
   try {
     console.log("sending request to finnhub stock info api");
    const response = await axios.get(
        `https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${FINNHUB_KEY}`
     );
-console.log("response is");
+
 console.log(response.data);
    return res.json(response.data);
      
@@ -64,6 +66,39 @@ export const getRelatedStocks = async(req:Request,res:Response)=>{
   }
 }
 
+export const getOrCreateStock = async (req: Request, res: Response) => {
+  try {
+    console.log("request came to get or create stock");
+
+    let { symbol } = req.body;
+
+    if (!symbol) {
+      return res.status(400).json({ message: "Symbol is required" });
+    }
+
+    symbol = symbol.toUpperCase();
+
+    const stock = await prisma.stock.upsert({
+      where: { symbol },
+      update: {}, 
+      create: {
+        symbol,
+        name: symbol,
+        exchange: null,
+        currency: null,
+        type: null
+      }
+    });
+
+    return res.status(200).json(stock);
+
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch/create stock", error: e });
+  }
+};
 
 export const getStockChartData = async (req:Request, res:Response) => {
   const { symbol } = req.params;

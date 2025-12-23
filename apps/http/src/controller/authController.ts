@@ -1,11 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import type { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET as string;
-
-
-const prisma = new PrismaClient(); 
+import { prisma } from "../lib/prisma";
 export const signup = async(req:Request ,res:Response ) =>{
     console.log("Signup request came");
 console.log("signup request");
@@ -16,6 +13,12 @@ try{
     const user = await prisma.user.create({
 data:{email,password:hashedPassword,name},
 
+    });
+    await prisma.wallet.create({
+      data: {
+        userId: user.id,
+        balance: 10000, 
+      }
     });
     const token = jwt.sign({userId: user.id},JWT_SECRET);
     res.status(200).json({token});
@@ -33,18 +36,24 @@ export const signin = async(req:Request,res:Response)=>{
     try{
         const user = await prisma.user.findUnique({where: {email}});
         console.log("user is");
+        console.log(user);
         if(!user) return res.status(400).json({message:"Invalid Credentials"});
         const isValid =await bcrypt.compare(password,user.password);
         if(!isValid) return res.status(400).json({message:"Invalid Credentials"});
        const token = jwt.sign({userId: user.id},JWT_SECRET,{expiresIn: "30d"});
         res.json({token});
-    } catch(e){
-        res.status(500).json({error: e});
-    }
+    } catch (e: any) {
+  console.error("Signin error:", e);
+
+  res.status(500).json({
+    message: "Signin failed",
+    error: e.message,
+  });
+}
 };
 
 export const getDetails =(req:Request,res:Response)=>{
-    console.log("request came");
-    const name = req.body.name ;
+    console.log("request came to get details");
+    const name = req.user?.userId ;
     res.status(200).json({message:`Your name is ${name}`});
 }

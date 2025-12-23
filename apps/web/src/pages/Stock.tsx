@@ -48,47 +48,64 @@ const useCompanyProfile = (symbol?: string) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!symbol) {
-      setProfile(null);
-      return;
-    }
+useEffect(() => {
+  if (!symbol) {
+    setProfile(null);
+    return;
+  }
 
-    setLoading(true);
-    setError(null);
-    const controller = new AbortController();
-    const infoUrl = `${BASE_URL}/stock/${symbol}/info`;
-    console.log("sending request to");
-    console.log(infoUrl);
+  setLoading(true);
+  setError(null);
 
-    const fetchInfo = async () => {
-      try {
-        const token = localStorage.getItem("Token"); 
-        console.log(token);
-        if (!token) {
-  setError("No token found");
-  setLoading(false);
-  return;
-}
-        const res = await axios.get<CompanyProfile>(infoUrl, {
-           headers: {
-          Authorization: `Bearer ${token}`
-        },
-          signal: controller.signal,
-        });
-        console.log(res.data);
-        setProfile(res.data);
+  const controller = new AbortController();
+  const infoUrl = `${BASE_URL}/stock/${symbol}/info`;
+  const stockIdUrl = `${BASE_URL}/stock/entry`;
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("Token");
+      if (!token) {
+        setError("No token found");
         setLoading(false);
-      } catch (err: any) {
-        if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-        setError(err?.message ?? "Failed to fetch profile");
-        setLoading(false);
+        return;
       }
-    };
 
-    fetchInfo();
-    return () => controller.abort();
-  }, [symbol]);
+      const [infoRes] = await Promise.allSettled([
+        axios.get<CompanyProfile>(infoUrl, {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        }),
+
+        axios.post(
+          stockIdUrl,
+          { symbol }, 
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: controller.signal,
+          }
+        ),
+      ]);
+
+      
+      if (infoRes.status === "fulfilled") {
+        setProfile(infoRes.value.data);
+      } else {
+        setError(infoRes.reason?.message ?? "Failed to fetch profile");
+      }
+
+      setLoading(false);
+    } catch (err: any) {
+      if (err?.name === "CanceledError" || err?.name === "AbortError") return;
+      setError(err?.message ?? "Unexpected error");
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+
+  return () => controller.abort();
+}, [symbol]);
+
 
   return { profile, loading, error };
 };

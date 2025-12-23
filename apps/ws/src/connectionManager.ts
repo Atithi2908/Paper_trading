@@ -12,6 +12,8 @@ export async function initializeLimitOrderSubscriptions() {
     for (const symbol of symbols) {
         if (!finnhubSubscriptions.has(symbol)) {
             finnhubSocket.send(JSON.stringify({ type: "subscribe", symbol }));
+            console.log("subscribed to from redis ");
+            console.log(symbol);
             finnhubSubscriptions.add(symbol);
         }
     }
@@ -119,6 +121,8 @@ finnhubSocket.on("message", async (msg) => {
   let parsed;
   try {
     parsed = JSON.parse(msg.toString());
+    console.log("message recieved from finhub websocket");
+    console.log(parsed);
   } catch (e) {
     console.warn("Received non-JSON message from Finnhub:", msg.toString());
     return;

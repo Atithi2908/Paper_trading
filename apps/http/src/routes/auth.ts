@@ -9,6 +9,6 @@ router.post('/signup',signup);
 
 router.post('/login',signin);
 
-router.post('/getDetails',authMiddleware, getDetails);
+router.get('/getDetails',authMiddleware, getDetails);
 
 export default router;

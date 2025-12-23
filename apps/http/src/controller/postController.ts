@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import {Request, Response} from "express";
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma";
 
 export const createPost = async(req:Request,res:Response)=>{
     console.log("Request for creating post");
