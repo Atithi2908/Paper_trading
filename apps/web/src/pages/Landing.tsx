@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TrendingUp, BarChart3, DollarSign, Shield, Users, Zap, ArrowRight } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import {login,signup}   from '../services/auth';

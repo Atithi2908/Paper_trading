@@ -1,9 +1,6 @@
 import WebSocket from "ws";
-import dotenv from "dotenv";
-import path from "path";
-
-dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
-
+import { configDotenv } from "dotenv";
+configDotenv()
 const FINNHUB_KEY = process.env.FINNHUB_API_KEY!;
 const FINNHUB_WS_URL = `wss://ws.finnhub.io?token=${FINNHUB_KEY}`;
 

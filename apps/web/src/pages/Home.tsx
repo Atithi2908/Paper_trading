@@ -1,6 +1,6 @@
-import React, { useState,useEffect } from 'react';
-import { Search, MessageCircle, Bell, User, ChevronDown, TrendingUp, Rocket } from 'lucide-react';
-import { BASE_URL } from '@repo/config';
+import { useState,useEffect } from 'react';
+import { Search, MessageCircle, Bell, User, ChevronDown, TrendingUp } from 'lucide-react';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import axios from "axios";
 import { StockSearch } from '../components/StockSearch';
 
@@ -32,7 +32,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
 
  useEffect(() => {
   const fetchPosts = async () => {
-    setLoading(true); // start loading
+    setLoading(true);
     try {
       const token = localStorage.getItem("Token"); 
       console.log("token is");
@@ -61,7 +61,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
       console.log("token is");
       console.log(token);
       console.log(`${BASE_URL}/post/create`);
-      const res = await axios.post( `${BASE_URL}/post/create`, 
+      await axios.post( `${BASE_URL}/post/create`, 
         {
          content: formData.content,
           tags:formData.tags
@@ -71,10 +71,12 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
           Authorization: `Bearer ${token}`
         }
       });
-    } catch (err) {
+    } 
+     catch (err) {
       console.error("Error fetching posts:", err);
     } finally {
       setLoading(false); // stop loading
+      
     }
   };
 
@@ -221,7 +223,8 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
       <div className="flex justify-end gap-2">
         <button
           onClick={() => setisPostOpen(false)}
-          className="px-4 py-2 bg-gray-200 rounded-md"
+          disabled={Loading}
+          className="px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
@@ -232,9 +235,11 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
          createPost();
             setisPostOpen(false);
           }}
-          className="px-4 py-2 bg-sky-600 text-white rounded-md"
+          disabled={Loading}
+          className="px-4 py-2 bg-sky-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          Post
+          {Loading && <span className="inline-block animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>}
+          {Loading ? 'Posting...' : 'Post'}
         </button>
       </div>
     </div>
@@ -244,15 +249,26 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
        
           <div className="col-span-6">
             <div className="space-y-4">
-              {posts.map((post) => (
-                <div
-                  key={post.id}
-                  className="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-cyan-500 transition cursor-pointer"
-                >
-                  <h3 className="text-white font-bold mb-2">{post.user.name}</h3>
-                  <p className="text-slate-300">{post.content}</p>
+              {Loading ? (
+                <div className="bg-slate-900 border border-slate-800 rounded-lg p-12 flex flex-col items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-500 mb-4"></div>
+                  <p className="text-slate-400 text-center">Loading posts...</p>
                 </div>
-              ))}
+              ) : posts.length > 0 ? (
+                posts.map((post) => (
+                  <div
+                    key={post.id}
+                    className="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-cyan-500 transition cursor-pointer"
+                  >
+                    <h3 className="text-white font-bold mb-2">{post.user.name}</h3>
+                    <p className="text-slate-300">{post.content}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="bg-slate-900 border border-slate-800 rounded-lg p-12 text-center">
+                  <p className="text-slate-400">No posts yet. Be the first to share!</p>
+                </div>
+              )}
             </div>
           </div>
 

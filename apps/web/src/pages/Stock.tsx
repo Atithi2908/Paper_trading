@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import type { FC } from "react";
 import {
@@ -10,7 +10,7 @@ import {
   CartesianGrid,
   ResponsiveContainer
 } from "recharts";
-import { BASE_URL } from "@repo/config";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { useParams } from "react-router-dom";
 import { QuickTradePanel } from "../components/QuickTrade";
 

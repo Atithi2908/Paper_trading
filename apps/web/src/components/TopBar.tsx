@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaFacebookMessenger, FaBell, FaUser, FaCaretDown, FaSearch } from 'react-icons/fa';
 
 export default function Topbar({ siteName = 'MyWebsite', balance = 10000 }) {
     const [open, setOpen] = useState(false);
-    const [time, setTime] = useState(new Date());
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -16,10 +15,7 @@ export default function Topbar({ siteName = 'MyWebsite', balance = 10000 }) {
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
-    useEffect(() => {
-        const interval = setInterval(() => setTime(new Date()), 1000);
-        return () => clearInterval(interval);
-    }, []);
+    
 
     return (
       <header className="w-full bg-[#1F2940] border-b border-gray-200 shadow-sm">

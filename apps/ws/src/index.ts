@@ -1,6 +1,5 @@
 import { WebSocketServer } from "ws";
-import dotenv from "dotenv";
-import path from "path";
+
 import { initializeLimitOrderSubscriptions, setupClientConnection } from "./connectionManager";
 
 const PORT =  4000;
