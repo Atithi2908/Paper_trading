@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis-data:/data
+
+  http:
+    build:
+      context: .
+      dockerfile: apps/http/Dockerfile
+    restart: always
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - redis
+
+  ws:
+    build:
+      context: .
+      dockerfile: apps/ws/Dockerfile
+    restart: always
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - redis
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_BASE_URL: http://4.213.181.127
+        VITE_WS_URL: ws://4.213.181.127
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - http
+      - ws
+
+volumes:
+  redis-data:

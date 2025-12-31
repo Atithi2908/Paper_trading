@@ -66,6 +66,38 @@ export const getRelatedStocks = async(req:Request,res:Response)=>{
   }
 }
 
+export const searchStocks = async (req: Request, res: Response) => {
+  try {
+    console.log("request to search stock");
+    const query = req.query.q as string;
+
+    if (!query) {
+      return res.status(400).json({ message: "Query is required" });
+    }
+
+    const apiKey = process.env.FINNHUB_API_KEY;
+
+    if (!apiKey) {
+      return res.status(500).json({ message: "Finnhub API key missing" });
+    }
+
+    const response = await axios.get(
+      "https://finnhub.io/api/v1/search",
+      {
+        params: {
+          q: query,
+          token: apiKey,
+        },
+      }
+    );
+
+    return res.json(response.data);
+  } catch (error) {
+    console.error("Finnhub search error:", error);
+    return res.status(500).json({ message: "Failed to fetch stocks" });
+  }
+};
+
 export const getOrCreateStock = async (req: Request, res: Response) => {
   try {
     console.log("request came to get or create stock");

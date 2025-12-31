@@ -10,7 +10,7 @@ services:
     ports:
       - "80:80"
     env_file:
-      - apps/http/.env
+      - apps/web/.env
     depends_on:
       - http
       - ws
