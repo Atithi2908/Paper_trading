@@ -38,7 +38,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
       console.log("token is");
       console.log(token);
       console.log(`${BASE_URL}/post/fetchPost`);
-      const res = await axios.get( "http://localhost:3000/post/fetchPost", {
+      const res = await axios.get( `${BASE_URL}/post/fetchPost`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
