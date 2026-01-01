@@ -191,27 +191,27 @@ const useChartData = (symbol?: string, range: string = "1y") => {
 const StockDetailsHeader: FC<{ symbol?: string }> = ({ symbol }) => {
   const { profile, loading, error } = useCompanyProfile(symbol);
 
-  if (loading) return <div>Loading company info…</div>;
-  if (error) return <div>Error loading company info: {error}</div>;
+  if (loading) return <div className="text-sm md:text-base">Loading company info…</div>;
+  if (error) return <div className="text-sm md:text-base text-red-500">Error loading company info: {error}</div>;
 
   return (
-    <header className="flex items-center gap-4">
+    <header className="flex items-center gap-2 sm:gap-3 md:gap-4">
       {profile?.logo ? (
         <img
           src={profile.logo}
           alt={profile.name}
-          className="w-12 h-12 object-contain"
+          className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
         />
       ) : (
-        <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded flex items-center justify-center text-sm sm:text-base">
           {symbol?.charAt(0)}
         </div>
       )}
       <div>
-        <div className="font-semibold">
+        <div className="font-semibold text-sm sm:text-base md:text-lg">
           {profile?.ticker ?? symbol} — {profile?.name}
         </div>
-        <div className="text-sm text-gray-500">{profile?.country ?? "N/A"}</div>
+        <div className="text-xs sm:text-sm text-gray-500">{profile?.country ?? "N/A"}</div>
       </div>
     </header>
   );
@@ -276,32 +276,28 @@ const StockDetailsPage: FC = ({}) => {
   const displayedPrice = livePrice ?? latest?.price ?? 0;
 
   return (
-    <div style={{ padding: 16 }}>
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
       <StockDetailsHeader symbol={symbol} />
-      <div style={{ marginTop: 12 }}>
-        <div style={{ fontSize: 28, fontWeight: 700 }}>
+      <div className="mt-3 sm:mt-4 md:mt-6">
+        <div className="text-2xl sm:text-3xl md:text-4xl font-bold">
           {profile?.currency ?? "USD"} {displayedPrice.toFixed(2)}
           {livePrice && (
-            <span style={{ marginLeft: 8, color: "#06b6d4", fontSize: 14 }}>
+            <span className="ml-2 sm:ml-3 md:ml-4 text-cyan-400 text-xs sm:text-sm md:text-base">
               (Live)
             </span>
           )}
         </div>
       </div>
-      <div style={{ marginTop: 12, marginBottom: 8 }}>
+      <div className="mt-3 sm:mt-4 md:mt-6 mb-3 sm:mb-4 flex flex-wrap gap-1.5 sm:gap-2">
         {["1d", "5d", "1mo", "3mo", "6mo", "1y"].map((r) => (
           <button
             key={r}
             onClick={() => setTimeRange(r as any)}
-            style={{
-              marginRight: 8,
-              padding: "6px 10px",
-              borderRadius: 6,
-              border: timeRange === r ? "1px solid #06b6d4" : "1px solid #ddd",
-              background: timeRange === r ? "#06b6d4" : "transparent",
-              color: timeRange === r ? "#fff" : "#111",
-              cursor: "pointer",
-            }}
+            className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-md border text-xs sm:text-sm md:text-base ${
+              timeRange === r
+                ? "border-cyan-400 bg-cyan-400 text-white"
+                : "border-gray-300 bg-transparent text-gray-800"
+            } cursor-pointer transition hover:border-cyan-400`}
           >
             {r.toUpperCase()}
           </button>
@@ -309,20 +305,13 @@ const StockDetailsPage: FC = ({}) => {
       </div>
 
 
-      <div
-        style={{
-          height: 320,
-          background: "#fff",
-          padding: 12,
-          borderRadius: 8,
-        }}
-      >
+      <div className="h-64 sm:h-80 md:h-96 bg-white p-3 sm:p-4 rounded-lg shadow-md">
         {loadingChart ? (
-          <div>Loading chart…</div>
+          <div className="flex items-center justify-center h-full text-sm md:text-base">Loading chart…</div>
         ) : chartError ? (
-          <div>Error: {chartError}</div>
+          <div className="flex items-center justify-center h-full text-sm md:text-base text-red-500">Error: {chartError}</div>
         ) : chartData.length === 0 ? (
-          <div>No chart data</div>
+          <div className="flex items-center justify-center h-full text-sm md:text-base">No chart data</div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
@@ -333,8 +322,8 @@ const StockDetailsPage: FC = ({}) => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis domain={["auto", "auto"]} />
+              <XAxis dataKey="time" tick={{ fontSize: 12 }} />
+              <YAxis domain={["auto", "auto"]} tick={{ fontSize: 12 }} />
               <Tooltip
                 formatter={(v: any) => [
                   `${profile?.currency ?? "USD"} ${Number(v).toFixed(2)}`,
@@ -354,22 +343,22 @@ const StockDetailsPage: FC = ({}) => {
       </div>
     <QuickTradePanel symbol={symbol!} livePrice={livePrice} />
 
-      <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
-        <div style={{ background: "#fff", padding: 12, borderRadius: 8 }}>
-          <div>Open</div>
-          <div>{latest?.open?.toFixed(2) ?? "—"}</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mt-3 sm:mt-4 md:mt-6">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+          <div className="text-xs sm:text-sm text-gray-600 mb-1">Open</div>
+          <div className="text-sm sm:text-base md:text-lg font-semibold">{latest?.open?.toFixed(2) ?? "—"}</div>
         </div>
-        <div style={{ background: "#fff", padding: 12, borderRadius: 8 }}>
-          <div>High</div>
-          <div>{latest?.high?.toFixed(2) ?? "—"}</div>
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+          <div className="text-xs sm:text-sm text-gray-600 mb-1">High</div>
+          <div className="text-sm sm:text-base md:text-lg font-semibold">{latest?.high?.toFixed(2) ?? "—"}</div>
         </div>
-        <div style={{ background: "#fff", padding: 12, borderRadius: 8 }}>
-          <div>Low</div>
-          <div>{latest?.low?.toFixed(2) ?? "—"}</div>
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+          <div className="text-xs sm:text-sm text-gray-600 mb-1">Low</div>
+          <div className="text-sm sm:text-base md:text-lg font-semibold">{latest?.low?.toFixed(2) ?? "—"}</div>
         </div>
-        <div style={{ background: "#fff", padding: 12, borderRadius: 8 }}>
-          <div>Close</div>
-          <div>{latest?.price?.toFixed(2) ?? "—"}</div>
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+          <div className="text-xs sm:text-sm text-gray-600 mb-1">Close</div>
+          <div className="text-sm sm:text-base md:text-lg font-semibold">{latest?.price?.toFixed(2) ?? "—"}</div>
         </div>
       </div>
     </div>

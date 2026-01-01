@@ -55,17 +55,17 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
   };
 
   return (
-    <div className="p-4 bg-gray-900 text-white rounded-lg shadow-md w-full max-w-md">
+    <div className="p-3 sm:p-4 md:p-6 bg-gray-900 text-white rounded-lg shadow-md w-full max-w-md mx-auto my-4 sm:my-6">
 
-      <h3 className="text-lg font-semibold mb-3">
+      <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">
         Trade {symbol}
       </h3>
 
       {/* BUY / SELL Toggle */}
-      <div className="flex mb-4 rounded overflow-hidden">
+      <div className="flex mb-3 sm:mb-4 rounded overflow-hidden">
         <button
           onClick={() => setSide("BUY")}
-          className={`w-1/2 py-2 font-semibold ${
+          className={`w-1/2 py-2 font-semibold text-sm sm:text-base ${
             side === "BUY"
               ? "bg-green-500 text-black"
               : "bg-gray-800 text-gray-300"
@@ -75,7 +75,7 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
         </button>
         <button
           onClick={() => setSide("SELL")}
-          className={`w-1/2 py-2 font-semibold ${
+          className={`w-1/2 py-2 font-semibold text-sm sm:text-base ${
             side === "SELL"
               ? "bg-red-500 text-black"
               : "bg-gray-800 text-gray-300"
@@ -86,10 +86,10 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
       </div>
 
       {/* MARKET / LIMIT Toggle */}
-      <div className="flex mb-4 rounded overflow-hidden">
+      <div className="flex mb-3 sm:mb-4 rounded overflow-hidden">
         <button
           onClick={() => setType("MARKET")}
-          className={`w-1/2 py-2 ${
+          className={`w-1/2 py-2 text-sm sm:text-base ${
             type === "MARKET"
               ? "bg-blue-500 text-black"
               : "bg-gray-800 text-gray-300"
@@ -99,7 +99,7 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
         </button>
         <button
           onClick={() => setType("LIMIT")}
-          className={`w-1/2 py-2 ${
+          className={`w-1/2 py-2 text-sm sm:text-base ${
             type === "LIMIT"
               ? "bg-blue-500 text-black"
               : "bg-gray-800 text-gray-300"
@@ -110,31 +110,31 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
       </div>
 
       {/* Quantity */}
-      <label className="block mb-1 text-sm">Quantity</label>
+      <label className="block mb-1 text-xs sm:text-sm">Quantity</label>
       <input
         type="number"
         min={1}
         value={quantity}
         onChange={(e) => setQuantity(Number(e.target.value))}
-        className="w-full p-2 mb-3 rounded bg-gray-800"
+        className="w-full p-2 mb-3 rounded bg-gray-800 text-sm sm:text-base"
       />
 
       {/* Limit Price */}
       {type === "LIMIT" && (
         <>
-          <label className="block mb-1 text-sm">Limit Price</label>
+          <label className="block mb-1 text-xs sm:text-sm">Limit Price</label>
           <input
             type="number"
             value={limitPrice}
             onChange={(e) => setLimitPrice(e.target.value)}
-            className="w-full p-2 mb-3 rounded bg-gray-800"
+            className="w-full p-2 mb-3 rounded bg-gray-800 text-sm sm:text-base"
           />
         </>
       )}
 
       {/* Live Price */}
       {livePrice && (
-        <div className="text-sm text-teal-400 mb-3">
+        <div className="text-xs sm:text-sm text-teal-400 mb-3">
           Live Price: {livePrice.toFixed(2)}
         </div>
       )}
@@ -143,14 +143,14 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
       <button
         onClick={submitOrder}
         disabled={loading}
-        className="w-full py-2 rounded font-semibold bg-teal-500 hover:bg-teal-600 transition"
+        className="w-full py-2 sm:py-2.5 rounded font-semibold bg-teal-500 hover:bg-teal-600 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
       >
         {loading ? "Placing Order..." : `${side} ${type}`}
       </button>
 
       {/* Messages */}
-      {success && <p className="text-green-400 mt-3">{success}</p>}
-      {error && <p className="text-red-400 mt-3">{error}</p>}
+      {success && <p className="text-green-400 mt-3 text-xs sm:text-sm">{success}</p>}
+      {error && <p className="text-red-400 mt-3 text-xs sm:text-sm">{error}</p>}
     </div>
   );
 }

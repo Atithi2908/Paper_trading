@@ -29,25 +29,25 @@ export default function Login() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-800">
+        <div className="flex items-center justify-center min-h-screen bg-gray-800 px-4">
             <Card>
-                <div className='text-4xl'>
-                    <h1 className="text-4xl mb-6">Welcome User!</h1>
-                    <div className="text-xl text-black space-y-6">
+                <div className='text-2xl sm:text-3xl md:text-4xl'>
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl mb-4 sm:mb-6">Welcome User!</h1>
+                    <div className="text-base sm:text-lg md:text-xl text-black space-y-4 sm:space-y-6">
                         <InputField label="Email" value={email} onChange={setEmail} />
                         <InputField label="Password" value={password} onChange={setPassword} />
 
-                        <p className='text-base'>
+                        <p className='text-sm sm:text-base'>
                             New user?
-                            <a href="/signup" className="text-blue-500 text-base hover:underline">
+                            <a href="/signup" className="text-blue-500 text-sm sm:text-base hover:underline ml-1">
                                 Sign Up
                             </a>
                         </p>
                         <button
-                            className="w-full bg-blue-500 text-white p-1 rounded-[1vw] hover:bg-blue-600"
+                            className="w-full bg-blue-500 text-white p-2 sm:p-3 rounded-lg hover:bg-blue-600 text-sm sm:text-base"
                             onClick={handleLogin} disabled={loading}
                             >
-                            Login
+                            {loading ? 'Loading...' : 'Login'}
                         </button>
                     </div>
                 </div>
