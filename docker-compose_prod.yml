@@ -36,8 +36,9 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
-        VITE_API_BASE_URL: http://4.213.181.127
-        VITE_WS_URL: ws://4.213.181.127
+        VITE_API_BASE_URL=https://tradeincase.mooo.com
+        VITE_WS_URL=wss://tradeincase.mooo.com/
+
     restart: always
     ports:
       - "80:80"
