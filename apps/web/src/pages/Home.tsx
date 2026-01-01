@@ -108,7 +108,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <TrendingUp className="text-cyan-400" size={28} />
-            <span className="text-xl font-bold text-white">TRADEINCASE</span>
+            <span className="text-xl font-bold text-white">Paper Trades</span>
           </div>
 
           <div className="flex-1 max-w-xl mx-8">
