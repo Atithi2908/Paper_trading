@@ -180,7 +180,6 @@ export const executeLimitOrderTrade = async (order: any, price: number) => {
       where: { userId: order.userId, stockId: order.stockId }
     });
 
-    // ---------- BUY ----------
     if (order.side === "BUY") {
       const wallet = await tx.wallet.findUnique({
         where: { userId: order.userId }
@@ -194,7 +193,7 @@ export const executeLimitOrderTrade = async (order: any, price: number) => {
         throw new Error("INSUFFICIENT_BALANCE_AT_EXECUTION");
       }
 
-      // debit wallet
+      
       await tx.wallet.update({
         where: { userId: order.userId },
         data: { balance: wallet.balance - amount }

@@ -3,6 +3,7 @@ import { Search, MessageCircle, Bell, User, ChevronDown, TrendingUp } from 'luci
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import axios from "axios";
 import { StockSearch } from '../components/StockSearch';
+import { useNavigate } from "react-router-dom";
 
 export interface User {
   id: number;
@@ -25,6 +26,7 @@ export default function TradingDashboard() {
  const [posts, setPosts] = useState<Post[]>([]);
  const[Loading,setLoading] = useState(false);
   const [isPostOpen, setisPostOpen] = useState(false);
+   const Navigate = useNavigate();
 const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
   content: '',
   tags: [],
@@ -278,7 +280,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
           <div className="lg:col-span-3 order-3 space-y-4 md:space-y-6">
             <div 
               className="bg-slate-900 border border-slate-800 rounded-lg p-4 md:p-6 hover:border-cyan-500 transition cursor-pointer"
-              onClick={() => setShowPortfolio(true)}
+              onClick={() => Navigate("/portfolio")}
             >
               <h2 className="text-lg md:text-xl font-bold text-white mb-3 md:mb-4">Today's Portfolio</h2>
               <div className="space-y-2 md:space-y-3">
@@ -291,7 +293,16 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
                   <span className="text-green-400 font-bold text-sm md:text-base">+$320</span>
                 </div>
               </div>
-              <p className="text-cyan-400 text-xs md:text-sm mt-3 md:mt-4 text-center">Click to view full portfolio →</p>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  Navigate("/portfolio");
+                }}
+                className="mt-3 md:mt-4 w-full text-center text-cyan-400 text-xs md:text-sm font-semibold hover:text-cyan-300"
+              >
+                Show full portfolio →
+              </button>
             </div>
 
     

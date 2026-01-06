@@ -22,25 +22,72 @@ export const getStockQuote = async (req: Request, res: Response) => {
 
 export const getStockInfo = async (req: Request, res: Response) => {
   console.log("request came to get stock info");
-  const { symbol } = req.params;
-  //console.log("symbol is");
-  //console.log(symbol);
+  let { symbol } = req.params;
+
+  if (!symbol) {
+    return res.status(400).json({ message: "Symbol is required" });
+  }
 
   try {
-    console.log("sending request to finnhub stock info api");
-   const response = await axios.get(
-       `https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${FINNHUB_KEY}`
+    const finnhubRes = await axios.get(
+      `https://finnhub.io/api/v1/stock/profile2`,
+      {
+        params: {
+          symbol,
+          token: FINNHUB_KEY
+        },
+         validateStatus: () => true 
+      }
     );
 
-console.log(response.data);
-   return res.json(response.data);
-     
-  
+    const finnhubData = finnhubRes.data;
+
+    if (finnhubData && finnhubData.name) {
+      return res.json({
+        ...finnhubData,
+        source: "finnhub"
+      });
+    }
+
+    console.log("Finnhub empty → falling back to Yahoo");
+
+    const yahooSymbol = symbol.includes(".")
+      ? symbol
+      : `${symbol}.NS`;
+
+    const yahooRes = await axios.get(
+      `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}`,
+      {
+        params: {
+          interval: "1d",
+          range: "1d"
+        }
+      }
+    );
+
+    const result = yahooRes.data?.chart?.result?.[0];
+    if (!result) {
+      throw new Error("Yahoo returned no data");
+    }
+
+    const meta = result.meta;
+
+    return res.json({
+      symbol: meta.symbol,
+      name: meta.longName || meta.shortName,
+      exchange: meta.exchangeName,
+      currency: meta.currency,
+      price: meta.regularMarketPrice,
+      logo: null, // use Clearbit or stored logo
+      source: "yahoo"
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err });
+    console.error("getStockInfo error:", err);
+    return res.status(500).json({ message: "Failed to fetch stock info" });
   }
 };
+
 
 export const getRelatedStocks = async(req:Request,res:Response)=>{
   console.log("Request to get related stocks");

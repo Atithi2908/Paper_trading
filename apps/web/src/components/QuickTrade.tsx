@@ -55,30 +55,30 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
   };
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 bg-gray-900 text-white rounded-lg shadow-md w-full max-w-md mx-auto my-4 sm:my-6">
+    <div className="p-4 sm:p-6 md:p-8 bg-gradient-to-br from-[#1a2a3a] to-[#0f1b28] text-white rounded-2xl border border-gray-700 shadow-xl w-full max-w-2xl mx-auto">
 
-      <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">
-        Trade {symbol}
+      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+        Quick Trade {symbol}
       </h3>
 
       {/* BUY / SELL Toggle */}
-      <div className="flex mb-3 sm:mb-4 rounded overflow-hidden">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
         <button
           onClick={() => setSide("BUY")}
-          className={`w-1/2 py-2 font-semibold text-sm sm:text-base ${
+          className={`py-3 sm:py-4 font-bold text-sm sm:text-base md:text-lg rounded-lg transition-all duration-300 ${
             side === "BUY"
-              ? "bg-green-500 text-black"
-              : "bg-gray-800 text-gray-300"
+              ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
+              : "bg-gray-800/50 text-gray-300 border border-gray-700 hover:bg-gray-700/50 hover:border-gray-600"
           }`}
         >
           BUY
         </button>
         <button
           onClick={() => setSide("SELL")}
-          className={`w-1/2 py-2 font-semibold text-sm sm:text-base ${
+          className={`py-3 sm:py-4 font-bold text-sm sm:text-base md:text-lg rounded-lg transition-all duration-300 ${
             side === "SELL"
-              ? "bg-red-500 text-black"
-              : "bg-gray-800 text-gray-300"
+              ? "bg-gradient-to-r from-red-500 to-pink-500 text-white"
+              : "bg-gray-800/50 text-gray-300 border border-gray-700 hover:bg-gray-700/50 hover:border-gray-600"
           }`}
         >
           SELL
@@ -86,23 +86,23 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
       </div>
 
       {/* MARKET / LIMIT Toggle */}
-      <div className="flex mb-3 sm:mb-4 rounded overflow-hidden">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
         <button
           onClick={() => setType("MARKET")}
-          className={`w-1/2 py-2 text-sm sm:text-base ${
+          className={`py-3 sm:py-4 font-bold text-sm sm:text-base md:text-lg rounded-lg transition-all duration-300 ${
             type === "MARKET"
-              ? "bg-blue-500 text-black"
-              : "bg-gray-800 text-gray-300"
+              ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white"
+              : "bg-gray-800/50 text-gray-300 border border-gray-700 hover:bg-gray-700/50 hover:border-gray-600"
           }`}
         >
           MARKET
         </button>
         <button
           onClick={() => setType("LIMIT")}
-          className={`w-1/2 py-2 text-sm sm:text-base ${
+          className={`py-3 sm:py-4 font-bold text-sm sm:text-base md:text-lg rounded-lg transition-all duration-300 ${
             type === "LIMIT"
-              ? "bg-blue-500 text-black"
-              : "bg-gray-800 text-gray-300"
+              ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white"
+              : "bg-gray-800/50 text-gray-300 border border-gray-700 hover:bg-gray-700/50 hover:border-gray-600"
           }`}
         >
           LIMIT
@@ -110,32 +110,36 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
       </div>
 
       {/* Quantity */}
-      <label className="block mb-1 text-xs sm:text-sm">Quantity</label>
-      <input
-        type="number"
-        min={1}
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-        className="w-full p-2 mb-3 rounded bg-gray-800 text-sm sm:text-base"
-      />
+      <div className="mb-6">
+        <label className="block text-xs sm:text-sm font-semibold text-gray-300 uppercase tracking-wide mb-2">Quantity</label>
+        <input
+          type="number"
+          min={1}
+          value={quantity}
+          onChange={(e) => setQuantity(Number(e.target.value))}
+          className="w-full px-4 py-2.5 sm:py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-white text-sm sm:text-base focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/50 transition"
+        />
+      </div>
 
       {/* Limit Price */}
       {type === "LIMIT" && (
-        <>
-          <label className="block mb-1 text-xs sm:text-sm">Limit Price</label>
+        <div className="mb-6">
+          <label className="block text-xs sm:text-sm font-semibold text-gray-300 uppercase tracking-wide mb-2">Limit Price</label>
           <input
             type="number"
             value={limitPrice}
             onChange={(e) => setLimitPrice(e.target.value)}
-            className="w-full p-2 mb-3 rounded bg-gray-800 text-sm sm:text-base"
+            className="w-full px-4 py-2.5 sm:py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-white text-sm sm:text-base focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/50 transition"
+            placeholder="Enter limit price"
           />
-        </>
+        </div>
       )}
 
       {/* Live Price */}
       {livePrice && (
-        <div className="text-xs sm:text-sm text-teal-400 mb-3">
-          Live Price: {livePrice.toFixed(2)}
+        <div className="p-3 sm:p-4 bg-green-500/10 border border-green-500/30 rounded-lg mb-6">
+          <div className="text-xs sm:text-sm text-green-400 font-semibold uppercase tracking-wide">Live Price</div>
+          <div className="text-2xl sm:text-3xl font-bold text-green-400 mt-1">${livePrice.toFixed(2)}</div>
         </div>
       )}
 
@@ -143,14 +147,26 @@ export function QuickTradePanel({ symbol, livePrice }: QuickTradeProps) {
       <button
         onClick={submitOrder}
         disabled={loading}
-        className="w-full py-2 sm:py-2.5 rounded font-semibold bg-teal-500 hover:bg-teal-600 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+        className={`w-full py-3 sm:py-4 rounded-lg font-bold text-sm sm:text-base md:text-lg transition-all duration-300 ${
+          side === "BUY"
+            ? "bg-gradient-to-r from-green-500 to-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white hover:opacity-90"
+            : "bg-gradient-to-r from-red-500 to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed text-white hover:opacity-90"
+        }`}
       >
-        {loading ? "Placing Order..." : `${side} ${type}`}
+        {loading ? "Placing Order..." : `${side} ${type} ${symbol}`}
       </button>
 
       {/* Messages */}
-      {success && <p className="text-green-400 mt-3 text-xs sm:text-sm">{success}</p>}
-      {error && <p className="text-red-400 mt-3 text-xs sm:text-sm">{error}</p>}
+      {success && (
+        <div className="mt-4 p-3 sm:p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+          <p className="text-green-400 text-xs sm:text-sm font-semibold">{success}</p>
+        </div>
+      )}
+      {error && (
+        <div className="mt-4 p-3 sm:p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+          <p className="text-red-400 text-xs sm:text-sm font-semibold">{error}</p>
+        </div>
+      )}
     </div>
   );
 }

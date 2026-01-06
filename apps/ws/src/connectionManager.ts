@@ -23,13 +23,13 @@ export async function initializeLimitOrderSubscriptions() {
 export function setupClientConnection(ws: WebSocket) {
   clientSubscriptions.set(ws, new Set());
   console.log("🧍 Client connected. Total:", clientSubscriptions.size);
-
   ws.on("message", (msg) => {
     try {
       const data = JSON.parse(msg.toString());
 
       if (data.type === "subscribe" && data.symbol) {
         const symbol = String(data.symbol).toUpperCase();
+          console.log("📥 FRONTEND SUBSCRIBE SYMBOL =", symbol);
         subscribeClientToSymbol(ws, symbol);
         return;
       }
@@ -121,6 +121,11 @@ finnhubSocket.on("message", async (msg) => {
   let parsed;
   try {
     parsed = JSON.parse(msg.toString());
+    console.log(
+  "📈 FINNHUB RAW SYMBOLS =",
+  parsed.data?.map((t: any) => t.s)
+);
+
     console.log("message recieved from finhub websocket");
     console.log(parsed);
   } catch (e) {
@@ -147,6 +152,16 @@ finnhubSocket.on("message", async (msg) => {
 
     for (const [symbol, ticks] of bySymbol.entries()) {
       const subs = symbolSubscribers.get(symbol);
+      console.log("subsrcibers are");
+      console.log(subs);
+      console.log(
+  "🧪 SUBSCRIBER CHECK",
+  "symbol =", symbol,
+  "hasSymbol =", symbolSubscribers.has(symbol),
+  "totalSymbols =", [...symbolSubscribers.keys()],
+  "subsSize =", symbolSubscribers.get(symbol)?.size
+);
+
       if (!subs) continue;
 
       const payload = JSON.stringify({ type: "trade", symbol, data: ticks });

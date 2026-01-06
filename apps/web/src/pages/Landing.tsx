@@ -1,304 +1,490 @@
-import { useState } from 'react';
-import { TrendingUp, BarChart3, DollarSign, Shield, Users, Zap, ArrowRight } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
-import {login,signup}   from '../services/auth';
-export default function LandingPage() {
-    const [showAuth, setShowAuth] = useState(false);
-    const [isLogin, setIsLogin] = useState(true);
-    const [formData, setFormData] = useState({ name: '', email: '', password: '' });
-    const [Loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-    const handleLogin = async (email: string, password: string) => {
-        setLoading(true);
-        try {
-            const data = await login(email, password);
-            localStorage.setItem("Token", data.token);
-            console.log("Token", data.token);
+import { useState, useEffect } from 'react';
 
+interface Stock {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  percent: number;
+} 
 
-            navigate("/home", { replace: true });
-        }
-        catch (err) {
-            alert("Login failed");
-        } finally {
-            setLoading(false);
-        }
-    };
+interface ChartDataPoint {
+  time: string;
+  value: number;
+}
 
+export default function TradingLanding() {
+  const [scrollY, setScrollY] = useState<number>(0);
+  const [visibleElements, setVisibleElements] = useState<number[]>([]);
+  const [currentStockIndex, setCurrentStockIndex] = useState<number>(0);
+  
+  // Data kept mostly the same for functionality, but you can swap symbols here
+  const stocks: Stock[] = [
+    { symbol: 'BTC', name: 'Bitcoin', price: 42150.20, change: 1250.50, percent: 2.95 },
+    { symbol: 'ETH', name: 'Ethereum', price: 2250.80, change: 45.20, percent: 1.85 },
+    { symbol: 'SOL', name: 'Solana', price: 98.45, change: -2.30, percent: -2.15 },
+    { symbol: 'AAPL', name: 'Apple Inc.', price: 178.45, change: 2.34, percent: 1.33 },
+    { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 495.22, change: 12.45, percent: 2.58 },
+    { symbol: 'TSLA', name: 'Tesla Inc.', price: 242.68, change: -5.12, percent: -2.07 },
+  ];
 
-    const handleSignup = async (name: string, email: string, password: string) => {
-        setLoading(true);
-        try {
-            const data = await signup(name, email, password);
-            localStorage.setItem("Token", data.token);
-            console.log("Token", data.token);
+  const chartData: ChartDataPoint[] = [
+    { time: '09:00', value: 420 },
+    { time: '10:00', value: 435 },
+    { time: '11:00', value: 428 },
+    { time: '12:00', value: 445 },
+    { time: '13:00', value: 438 },
+    { time: '14:00', value: 455 },
+    { time: '15:00', value: 470 },
+    { time: '16:00', value: 465 },
+  ];
 
+  useEffect(() => {
+    const stockInterval = setInterval(() => {
+      setCurrentStockIndex((prev) => (prev + 1) % stocks.length);
+    }, 3000);
 
-            navigate("/home", { replace: true });
-        }
-        catch (e) {
-            console.log(e);
-            alert(e);
-        } finally {
-            setLoading(false);
-        }
+    return () => clearInterval(stockInterval);
+  }, [stocks.length]);
 
-
-    };
-
-    const handleAuthSubmit = () => {
-        if (isLogin) {
-            handleLogin(formData.email, formData.password);
-        } else {
-            handleSignup(formData.name, formData.email, formData.password);
-        }
-    };
-
-    return (
-        <div className="min-h-screen bg-slate-950">
-            
-            <nav className="fixed top-0 w-full bg-slate-950 bg-opacity-95 backdrop-blur-sm border-b border-slate-800 z-50">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 md:py-4 flex justify-between items-center">
-                    <div className="flex items-center space-x-1.5 sm:space-x-2">
-                        <TrendingUp className="text-cyan-400" size={24} />
-                        <span className="text-lg sm:text-xl md:text-2xl font-bold text-white">TradeSim</span>
-                    </div>
-                    <div className="flex space-x-2 sm:space-x-4">
-                        <button
-                            onClick={() => { setShowAuth(true); setIsLogin(true); }}
-                            className="px-3 sm:px-5 py-1.5 sm:py-2 text-sm sm:text-base text-slate-300 hover:text-cyan-400 font-medium transition"
-                        >
-                            Login
-                        </button>
-                        <button
-                            onClick={() => { setShowAuth(true); setIsLogin(false); }}
-                            className="px-3 sm:px-5 py-1.5 sm:py-2 text-sm sm:text-base bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-400 hover:to-blue-400 font-medium transition"
-                        >
-                            Sign Up
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
+  useEffect(() => {
+    const handleScroll = (): void => {
+      setScrollY(window.scrollY);
+      
+      const elements = document.querySelectorAll('.scroll-fade');
+      const newVisible: number[] = [];
+      
+      elements.forEach((el, index) => {
+        const rect = el.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
         
-            {showAuth && (
-                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-900 rounded-lg p-4 sm:p-6 md:p-8 max-w-md w-full border border-slate-700 shadow-2xl">
-                        <div className="flex justify-between items-center mb-4 sm:mb-6">
-                            <h2 className="text-xl sm:text-2xl font-bold text-white">
-                                {isLogin ? 'Welcome Back' : 'Create Account'}
-                            </h2>
-                            <button
-                                onClick={() => setShowAuth(false)}
-                                className="text-slate-400 hover:text-white text-2xl transition"
-                            >
-                                ×
-                            </button>
-                        </div>
-                        <div className="space-y-3 sm:space-y-4">
-                            {!isLogin && (
-                                <input
-                                    type="text"
-                                    placeholder="Full Name"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg focus:outline-none focus:border-cyan-500 text-white placeholder-slate-400"
-                                />
-                            )}
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg focus:outline-none focus:border-cyan-500 text-white placeholder-slate-400"
-                            />
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg focus:outline-none focus:border-cyan-500 text-white placeholder-slate-400"
-                            />
-                            <button
-                                onClick={handleAuthSubmit}
-                                className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-400 hover:to-blue-400 font-medium transition"
-                                   disabled = {Loading}
-                            >
-                              
-                                {isLogin ? 'Login' : 'Sign Up'}
-                            </button>
-                        </div>
-                        <p className="text-center mt-4 text-slate-400">
-                            {isLogin ? "Don't have an account? " : "Already have an account? "}
-                            <button
-                                onClick={() => setIsLogin(!isLogin)}
-                                className="text-cyan-400 hover:text-cyan-300 font-medium transition"
-                            >
-                                {isLogin ? 'Sign Up' : 'Login'}
-                            </button>
-                        </p>
-                    </div>
-                </div>
-            )}
+        if (rect.top < windowHeight * 0.85) {
+          newVisible.push(index);
+        }
+      });
+      
+      setVisibleElements(newVisible);
+    };
 
-            {/* Hero Section */}
-            <section className="pt-20 sm:pt-24 md:pt-32 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6">
-                <div className="max-w-6xl mx-auto text-center">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
-                        <span className="text-white">Master Trading Without</span>
-                        <span className="block bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mt-2">
-                            Risking Real Money
-                        </span>
-                    </h1>
-                    <p className="text-base sm:text-lg md:text-xl text-slate-400 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4">
-                        Practice trading stocks, options, and crypto with virtual money. Build confidence and test strategies in a risk-free environment.
-                    </p>
-                    <button
-                        onClick={() => { setShowAuth(true); setIsLogin(false); }}
-                        className="px-5 sm:px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-400 hover:to-blue-400 text-base md:text-lg font-medium inline-flex items-center space-x-2 transition shadow-lg shadow-cyan-500/30"
-                    >
-                        <span>Start Trading Free</span>
-                        <ArrowRight size={18} className="sm:w-5 sm:h-5" />
-                    </button>
-                    <div className="mt-8 sm:mt-12 md:mt-16 bg-slate-900 border border-slate-800 rounded-lg p-4 sm:p-6 md:p-8 shadow-2xl">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 text-center">
-                            <div>
-                                <BarChart3 className="mx-auto mb-2 sm:mb-3 text-cyan-400" size={36} />
-                                <h3 className="text-2xl sm:text-3xl font-bold text-white">100K+</h3>
-                                <p className="text-sm sm:text-base text-slate-400">Active Traders</p>
-                            </div>
-                            <div>
-                                <DollarSign className="mx-auto mb-2 sm:mb-3 text-yellow-400" size={36} />
-                                <h3 className="text-2xl sm:text-3xl font-bold text-white">$100K</h3>
-                                <p className="text-sm sm:text-base text-slate-400">Virtual Starting Balance</p>
-                            </div>
-                            <div>
-                                <TrendingUp className="mx-auto mb-2 sm:mb-3 text-purple-400" size={36} />
-                                <h3 className="text-2xl sm:text-3xl font-bold text-white">Real-Time</h3>
-                                <p className="text-sm sm:text-base text-slate-400">Market Data</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-            {/* Features Section */}
-            <section className="py-12 sm:py-16 md:py-20 bg-slate-900 px-4 sm:px-6">
-                <div className="max-w-6xl mx-auto">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-white mb-3 md:mb-4">
-                        Everything You Need to Learn Trading
-                    </h2>
-                    <p className="text-center text-slate-400 mb-8 sm:mb-12 md:mb-16 text-base sm:text-lg px-4">
-                        Powerful features designed to help you become a confident trader
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                        <div className="bg-slate-800 border border-slate-700 p-5 sm:p-6 md:p-8 rounded-lg hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-500/10 transition">
-                            <Shield className="text-cyan-400 mb-3 sm:mb-4" size={36} />
-                            <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Zero Risk Trading</h3>
-                            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                                Trade with virtual money and learn from mistakes without any financial consequences. Perfect for beginners and experienced traders testing new strategies.
-                            </p>
-                        </div>
-                        <div className="bg-slate-800 border border-slate-700 p-5 sm:p-6 md:p-8 rounded-lg hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-500/10 transition">
-                            <Zap className="text-yellow-400 mb-3 sm:mb-4" size={36} />
-                            <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Real Market Conditions</h3>
-                            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                                Experience actual market prices and conditions. Our platform uses live market data so you can practice trading in realistic scenarios.
-                            </p>
-                        </div>
-                        <div className="bg-slate-800 border border-slate-700 p-5 sm:p-6 md:p-8 rounded-lg hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-500/10 transition">
-                            <BarChart3 className="text-purple-400 mb-3 sm:mb-4" size={36} />
-                            <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Advanced Analytics</h3>
-                            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                                Track your performance with detailed analytics and insights. Understand your trading patterns and identify areas for improvement.
-                            </p>
-                        </div>
-                        <div className="bg-slate-800 border border-slate-700 p-5 sm:p-6 md:p-8 rounded-lg hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-500/10 transition">
-                            <Users className="text-pink-400 mb-3 sm:mb-4" size={36} />
-                            <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Community Learning</h3>
-                            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                                Join a community of traders, share strategies, and learn from others. Compete in trading competitions and climb the leaderboards.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+  const currentStock = stocks[currentStockIndex];
+  const maxValue = Math.max(...chartData.map(d => d.value));
+  const minValue = Math.min(...chartData.map(d => d.value));
 
-            {/* How It Works */}
-            <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 bg-slate-950">
-                <div className="max-w-6xl mx-auto">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-white mb-3 md:mb-4">
-                        Get Started in 3 Simple Steps
-                    </h2>
-                    <p className="text-center text-slate-400 mb-8 sm:mb-12 md:mb-16 text-base sm:text-lg px-4">
-                        Begin your trading journey in less than a minute
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-cyan-500/50">
-                                1
-                            </div>
-                            <h3 className="text-xl font-bold text-white mb-4">Sign Up Free</h3>
-                            <p className="text-slate-400 leading-relaxed">
-                                Create your account in seconds. No credit card required, no hidden fees.
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-cyan-500/50">
-                                2
-                            </div>
-                            <h3 className="text-xl font-bold text-white mb-4">Get Virtual Money</h3>
-                            <p className="text-slate-400 leading-relaxed">
-                                Start with $100,000 in virtual cash to practice trading without any risk.
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-cyan-500/50">
-                                3
-                            </div>
-                            <h3 className="text-xl font-bold text-white mb-4">Start Trading</h3>
-                            <p className="text-slate-400 leading-relaxed">
-                                Buy and sell stocks, track your portfolio, and learn as you go.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+  return (
+    <div className="min-h-screen bg-zinc-900 overflow-x-hidden">
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-30px) rotate(5deg);
+          }
+        }
+        
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.6;
+            transform: scale(1.1);
+          }
+        }
+        
+        @keyframes shimmer {
+          0% {
+            background-position: -1000px 0;
+          }
+          100% {
+            background-position: 1000px 0;
+          }
+        }
+        
+        @keyframes rotateIn {
+          from {
+            opacity: 0;
+            transform: scale(0.8) rotateY(90deg);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+          }
+        }
 
-            {/* CTA Section */}
-            <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-cyan-600 via-blue-600 to-purple-700 px-4 sm:px-6">
-                <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6 px-4">
-                        Ready to Start Your Trading Journey?
-                    </h2>
-                    <p className="text-base sm:text-lg md:text-xl text-cyan-100 mb-6 sm:mb-8 px-4">
-                        Join thousands of traders learning to invest smarter with TradeSim
-                    </p>
-                    <button
-                        onClick={() => { setShowAuth(true); setIsLogin(false); }}
-                        className="px-5 sm:px-6 md:px-8 py-3 md:py-4 bg-white text-blue-600 rounded-lg hover:bg-slate-100 text-base md:text-lg font-medium inline-flex items-center space-x-2 transition shadow-xl"
-                    >
-                        <span>Create Free Account</span>
-                        <ArrowRight size={18} className="sm:w-5 sm:h-5" />
-                    </button>
-                </div>
-            </section>
+        @keyframes drawLine {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        
+        .scroll-fade {
+          opacity: 0;
+          transform: translateY(40px);
+          transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .scroll-fade.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        
+        .fade-in-up {
+          animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .delay-100 {
+          animation-delay: 0.1s;
+          opacity: 0;
+        }
+        
+        .delay-200 {
+          animation-delay: 0.2s;
+          opacity: 0;
+        }
+        
+        .delay-300 {
+          animation-delay: 0.3s;
+          opacity: 0;
+        }
+        
+        .delay-400 {
+          animation-delay: 0.4s;
+          opacity: 0;
+        }
+        
+        .float-slow {
+          animation: float 8s ease-in-out infinite;
+        }
+        
+        .pulse-glow {
+          animation: pulse 3s ease-in-out infinite;
+        }
 
-            {/* Footer */}
-            <footer className="bg-black text-white py-8 sm:py-10 md:py-12 px-4 sm:px-6 border-t border-slate-800">
-                <div className="max-w-6xl mx-auto text-center">
-                    <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
-                        <TrendingUp className="text-cyan-400" size={24} />
-                        <span className="text-xl sm:text-2xl font-bold">TradeSim</span>
-                    </div>
-                    <p className="text-sm sm:text-base text-slate-400 mb-4 sm:mb-6 px-4">
-                        Practice trading without the risk. Learn, grow, and become a better trader.
-                    </p>
-                    <p className="text-slate-600 text-xs sm:text-sm">
-                        © 2025 TradeSim. All rights reserved.
-                    </p>
-                </div>
-            </footer>
+        .rotate-in {
+          animation: rotateIn 0.6s ease-out forwards;
+        }
+        
+        .hover-lift {
+          transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        
+        .hover-lift:hover {
+          transform: translateY(-8px) scale(1.02);
+          box-shadow: 0 25px 50px rgba(95, 220, 198, 0.15);
+        }
+        
+        .btn-glow {
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .btn-glow:hover {
+          box-shadow: 0 0 40px rgba(95, 220, 198, 0.5);
+          transform: scale(1.05);
+        }
+        
+        .btn-glow::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          transition: left 0.5s;
+        }
+        
+        .btn-glow:hover::before {
+          left: 100%;
+        }
+        
+        .gradient-text {
+          background: linear-gradient(135deg, #5FDCC6 0%, #A8E6CF 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        .shimmer-border {
+          position: relative;
+          background: linear-gradient(90deg, transparent, rgba(95, 220, 198, 0.1), transparent);
+          background-size: 200% 100%;
+          animation: shimmer 3s linear infinite;
+        }
+        
+        .card-hover {
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+          transform: translateY(-10px) rotate(-1deg);
+          box-shadow: 0 30px 60px rgba(95, 220, 198, 0.2);
+        }
+
+        .chart-line {
+          stroke-dasharray: 1000;
+          stroke-dashoffset: 1000;
+          animation: drawLine 2s ease-out forwards;
+        }
+      `}</style>
+      
+      {/* NAVIGATION */}
+      <nav className="px-8 py-6 flex items-center justify-between border-b border-gray-800 backdrop-blur-sm bg-zinc-900/50 sticky top-0 z-50 fade-in-up">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-lg flex items-center justify-center hover:rotate-12 transition-transform">
+            <svg className="w-6 h-6 text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <span className="text-2xl font-bold text-white">QuantEx</span>
         </div>
-    );
+        <div className="flex items-center gap-8">
+          <a href="#" className="text-gray-400 hover:text-white transition-all hover:scale-110">Exchange</a>
+          <a href="#" className="text-gray-400 hover:text-white transition-all hover:scale-110">Derivatives</a>
+          <a href="#" className="text-gray-400 hover:text-white transition-all hover:scale-110">Learn</a>
+          <button className="px-5 py-2 border border-gray-700 hover:border-teal-400 text-white rounded-lg transition-all hover:scale-105">
+            Log In
+          </button>
+          <button className="px-5 py-2 bg-teal-400 hover:bg-teal-500 text-zinc-900 font-semibold rounded-lg transition-all hover:scale-105">
+            Register
+          </button>
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+      <main className="px-8 py-20 max-w-7xl mx-auto relative">
+        <div 
+          className="absolute top-20 right-10 w-96 h-96 bg-teal-400 rounded-full filter blur-3xl opacity-10 pulse-glow"
+          style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+        ></div>
+        <div 
+          className="absolute bottom-40 left-10 w-80 h-80 bg-emerald-400 rounded-full filter blur-3xl opacity-10 pulse-glow"
+          style={{ transform: `translateY(${scrollY * -0.2}px)`, animationDelay: '1.5s' }}
+        ></div>
+
+        <div className="text-center mb-24 relative z-10">
+          <div className="inline-block mb-4 px-4 py-2 bg-zinc-800 border border-gray-800 rounded-full text-sm text-gray-400 fade-in-up shimmer-border">
+            Join the fastest growing trading network
+          </div>
+          <h1 className="text-7xl font-bold text-white mb-6 fade-in-up delay-100">
+            Master the Markets
+            <br />
+            <span className="gradient-text">With Precision</span>
+          </h1>
+          <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto fade-in-up delay-200">
+            Leverage AI-driven insights and institutional-grade tools to stay ahead.
+            Trade crypto, forex, and equities on one unified platform.
+          </p>
+          <div className="flex flex-col items-center gap-4 fade-in-up delay-300">
+            <button className="px-8 py-4 bg-teal-400 hover:bg-teal-500 text-zinc-900 text-lg font-bold rounded-lg btn-glow flex items-center gap-2">
+              Launch Terminal
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </button>
+            <p className="text-sm text-gray-500">Sign up in seconds • KYC Verified</p>
+          </div>
+        </div>
+
+        {/* LIVE TICKER */}
+        <div className="mb-16 fade-in-up delay-400">
+          <div className="bg-gradient-to-r from-zinc-800 to-zinc-900 rounded-2xl border border-gray-800 p-8 overflow-hidden">
+            <div className="flex items-center justify-between">
+              <div className="rotate-in">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-3xl font-bold text-white">{currentStock.symbol}</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${currentStock.change > 0 ? 'bg-teal-400/20 text-teal-400' : 'bg-red-500/20 text-red-400'}`}>
+                    {currentStock.change > 0 ? '↑' : '↓'} {Math.abs(currentStock.percent)}%
+                  </span>
+                </div>
+                <p className="text-gray-400 text-sm mb-3">{currentStock.name}</p>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-4xl font-bold text-white">${currentStock.price.toLocaleString()}</span>
+                  <span className={`text-lg font-semibold ${currentStock.change > 0 ? 'text-teal-400' : 'text-red-400'}`}>
+                    {currentStock.change > 0 ? '+' : ''}{currentStock.change}
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                {stocks.map((stock, idx) => (
+                  <div 
+                    key={stock.symbol}
+                    className={`w-2 h-2 rounded-full transition-all ${idx === currentStockIndex ? 'bg-teal-400 w-8' : 'bg-gray-700'}`}
+                  ></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CHART SECTION */}
+        <div className={`scroll-fade ${visibleElements.includes(0) ? 'visible' : ''} mb-24 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-3xl border border-gray-800 p-10`}>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-2">Portfolio Performance</h3>
+              <p className="text-gray-400">Track your asset growth in real-time</p>
+            </div>
+            <div className="flex gap-2">
+              <button className="px-4 py-2 bg-teal-400/10 text-teal-400 rounded-lg font-semibold">24H</button>
+              <button className="px-4 py-2 text-gray-400 hover:text-white rounded-lg">7D</button>
+              <button className="px-4 py-2 text-gray-400 hover:text-white rounded-lg">30D</button>
+              <button className="px-4 py-2 text-gray-400 hover:text-white rounded-lg">ALL</button>
+            </div>
+          </div>
+          <div className="relative h-64">
+            <svg className="w-full h-full" viewBox="0 0 800 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#5FDCC6" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="#5FDCC6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              
+              {[0, 50, 100, 150, 200].map((y) => (
+                <line key={y} x1="0" y1={y} x2="800" y2={y} stroke="#2a2a2a" strokeWidth="1" />
+              ))}
+              
+              <path
+                d={`M 0 200 ${chartData.map((d, i) => {
+                  const x = (i / (chartData.length - 1)) * 800;
+                  const y = 200 - ((d.value - minValue) / (maxValue - minValue)) * 180;
+                  return `L ${x} ${y}`;
+                }).join(' ')} L 800 200 Z`}
+                fill="url(#chartGradient)"
+              />
+              
+              <path
+                className="chart-line"
+                d={`M ${chartData.map((d, i) => {
+                  const x = (i / (chartData.length - 1)) * 800;
+                  const y = 200 - ((d.value - minValue) / (maxValue - minValue)) * 180;
+                  return `${x} ${y}`;
+                }).join(' L ')}`}
+                fill="none"
+                stroke="#5FDCC6"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              
+              {chartData.map((d, i) => {
+                const x = (i / (chartData.length - 1)) * 800;
+                const y = 200 - ((d.value - minValue) / (maxValue - minValue)) * 180;
+                return (
+                  <circle
+                    key={i}
+                    cx={x}
+                    cy={y}
+                    r="4"
+                    fill="#5FDCC6"
+                  />
+                );
+              })}
+            </svg>
+            <div className="absolute bottom-0 left-0 right-0 flex justify-between px-4 text-xs text-gray-500">
+              {chartData.map((d) => (
+                <span key={d.time}>{d.time}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* FEATURE GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
+          <div className={`scroll-fade ${visibleElements.includes(1) ? 'visible' : ''} bg-gradient-to-br from-zinc-800 to-zinc-900 p-8 rounded-2xl border border-gray-800 card-hover`}>
+            <div className="text-teal-400 text-5xl font-bold mb-2">99.9%</div>
+            <h3 className="text-xl font-bold text-white mb-2">Uptime Guarantee</h3>
+            <p className="text-gray-500">
+              Reliable infrastructure that never sleeps, just like the markets
+            </p>
+          </div>
+
+          <div className={`scroll-fade ${visibleElements.includes(2) ? 'visible' : ''} bg-gradient-to-br from-zinc-800 to-zinc-900 p-8 rounded-2xl border border-gray-800 card-hover`} style={{transitionDelay: '0.1s'}}>
+            <div className="text-teal-400 text-5xl font-bold mb-2">500+</div>
+            <h3 className="text-xl font-bold text-white mb-2">Global Assets</h3>
+            <p className="text-gray-500">
+              Diverse portfolio options ranging from Crypto to Indices
+            </p>
+          </div>
+
+          <div className={`scroll-fade ${visibleElements.includes(3) ? 'visible' : ''} bg-gradient-to-br from-zinc-800 to-zinc-900 p-8 rounded-2xl border border-gray-800 card-hover`} style={{transitionDelay: '0.2s'}}>
+            <div className="text-teal-400 text-5xl font-bold mb-2">10x</div>
+            <h3 className="text-xl font-bold text-white mb-2">Leverage</h3>
+            <p className="text-gray-500">
+              Maximize your potential with competitive margin rates
+            </p>
+          </div>
+        </div>
+
+        {/* DETAILED FEATURES */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+          <div className={`scroll-fade ${visibleElements.includes(4) ? 'visible' : ''} bg-zinc-800 p-10 rounded-3xl border border-gray-800 hover-lift`}>
+            <div className="w-12 h-12 bg-teal-400/10 rounded-xl flex items-center justify-center mb-6 float-slow">
+              <svg className="w-7 h-7 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-4">Smart Order Routing</h3>
+            <p className="text-gray-400 text-lg leading-relaxed">
+              Our algorithm automatically finds the best prices across multiple liquidity providers, ensuring you get the best entry and exit points every time.
+            </p>
+          </div>
+
+          <div className={`scroll-fade ${visibleElements.includes(5) ? 'visible' : ''} bg-zinc-800 p-10 rounded-3xl border border-gray-800 hover-lift`} style={{transitionDelay: '0.15s'}}>
+            <div className="w-12 h-12 bg-teal-400/10 rounded-xl flex items-center justify-center mb-6 float-slow" style={{animationDelay: '1s'}}>
+              <svg className="w-7 h-7 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.131A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.2-2.858.567-4.166" />
+              </svg>
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-4">Biometric Verification</h3>
+            <p className="text-gray-400 text-lg leading-relaxed">
+              Secure your account with next-gen FaceID and fingerprint integration. Withdrawals are locked to your unique biological signature.
+            </p>
+          </div>
+        </div>
+
+        {/* CTA SECTION */}
+        <div className={`scroll-fade ${visibleElements.includes(6) ? 'visible' : ''} relative bg-gradient-to-r from-zinc-800 to-zinc-900 rounded-3xl p-16 text-center border border-gray-800 overflow-hidden`}>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-teal-400 rounded-full filter blur-3xl opacity-5 float-slow"></div>
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-emerald-400 rounded-full filter blur-3xl opacity-5 float-slow" style={{animationDelay: '2s'}}></div>
+          <div className="relative z-10">
+            <h2 className="text-5xl font-bold text-white mb-4">The Future is Open</h2>
+            <p className="text-gray-400 text-xl mb-10 max-w-2xl mx-auto">
+              Join the revolution of decentralized finance with the security of a centralized exchange.
+            </p>
+            <button className="px-12 py-5 bg-teal-400 hover:bg-teal-500 text-zinc-900 text-xl font-bold rounded-lg btn-glow flex items-center gap-2 mx-auto">
+              Create Free Account
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+            <p className="text-sm text-gray-500 mt-4">Zero fees for the first 30 days</p>
+          </div>
+        </div>
+      </main>
+
+      <div className="absolute top-40 left-20 w-2 h-2 bg-teal-400 rounded-full opacity-60 pulse-glow"></div>
+      <div className="absolute top-60 right-40 w-2 h-2 bg-teal-400 rounded-full opacity-40 pulse-glow" style={{animationDelay: '1s'}}></div>
+      <div className="absolute bottom-40 left-1/4 w-2 h-2 bg-teal-400 rounded-full opacity-50 pulse-glow" style={{animationDelay: '2s'}}></div>
+    </div>
+  );
 }
