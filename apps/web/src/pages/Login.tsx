@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import Card from '../components/Card';
-import { InputField } from '../components/InputField';
 import {login} from "../services/auth";
 import { useNavigate } from "react-router-dom";
 

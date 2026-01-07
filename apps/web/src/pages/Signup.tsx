@@ -1,7 +1,5 @@
 
 import { useState } from 'react';
-import Card from '../components/Card';
-import { InputField } from '../components/InputField';
 import { signup } from '../services/auth';
 import { useNavigate } from 'react-router-dom';
 export default function Signup() {
