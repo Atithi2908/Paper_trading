@@ -166,3 +166,53 @@ export const getUserTradeHistory = async (
     return res.status(500).json({ message: "Failed to fetch trade history" });
   }
 };
+
+export const getDetails = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
+
+    const userId = req.user.userId;
+
+    const [user, wallet] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+        },
+      }),
+      prisma.wallet.findUnique({
+        where: { userId },
+        select: {
+          balance: true,
+        },
+      }),
+    ]);
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      user: {
+        id: user.id,
+        username: user.name,
+      },
+      wallet: wallet ?? {
+        balance: 0,
+        currency: "INR",
+      },
+    });
+  } catch (error) {
+    console.error("getDetails error:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+};

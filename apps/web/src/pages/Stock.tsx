@@ -201,28 +201,28 @@ const useChartData = (symbol?: string, range: string = "1y") => {
 const StockDetailsHeader: FC<{ symbol?: string }> = ({ symbol }) => {
   const { profile, loading, error } = useCompanyProfile(symbol);
 
-  if (loading) return <div className="text-sm md:text-base text-gray-400">Loading company info…</div>;
+  if (loading) return <div className="text-sm md:text-base text-secondary">Loading company info…</div>;
   if (error) return <div className="text-sm md:text-base text-red-400">Error loading company info: {error}</div>;
 
   return (
-    <header className="flex items-center gap-3 sm:gap-4 md:gap-5 p-4 sm:p-6 bg-gradient-to-r from-[#1a2a3a] to-[#0f1b28] rounded-xl border border-gray-700 shadow-lg">
+    <header className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-panel rounded-lg border border-accent">
       {profile?.logo ? (
         <img
           src={profile.logo}
           alt={profile.name}
-          className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain rounded-lg bg-gray-800 p-2"
+          className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain rounded-md bg-panel-soft p-1"
         />
       ) : (
-        <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center text-lg sm:text-2xl md:text-3xl font-bold text-white">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-gradient-primary rounded-md flex items-center justify-center text-base sm:text-lg md:text-xl font-bold text-ink">
           {symbol?.charAt(0)}
         </div>
       )}
-      <div className="flex-1">
-        <div className="font-bold text-lg sm:text-2xl md:text-3xl text-white">
+      <div className="flex-1 min-w-0">
+        <div className="font-semibold text-sm sm:text-base md:text-lg text-ink truncate">
           {profile?.ticker ?? symbol}
         </div>
-        <div className="text-sm sm:text-base text-gray-300 mt-1">{profile?.name}</div>
-        <div className="text-xs sm:text-sm text-gray-500 mt-1">{profile?.country ?? "N/A"}</div>
+        <div className="text-xs sm:text-sm text-primary truncate">{profile?.name}</div>
+        <div className="text-xs text-neutral">{profile?.country ?? "N/A"}</div>
       </div>
     </header>
   );
@@ -288,47 +288,47 @@ const StockDetailsPage: FC = ({}) => {
   const displayedPrice = livePrice ?? latest?.price ?? 0;
 
   return (
-    <div className="min-h-screen bg-[#0d1117] p-3 sm:p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-page p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <StockDetailsHeader symbol={symbol} />
 
         {/* Price Display Section */}
-        <div className="mt-6 sm:mt-8 md:mt-10 p-4 sm:p-6 md:p-8 bg-gradient-to-br from-[#1a2a3a] to-[#0f1b28] rounded-2xl border border-gray-700 shadow-xl">
-          <div className="flex items-baseline gap-2 sm:gap-3">
-            <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+        <div className="mt-4 sm:mt-5 p-3 sm:p-4 theme-card">
+          <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               {profile?.currency ?? "USD"} {displayedPrice.toFixed(2)}
             </div>
             {livePrice && (
-              <span className="px-3 sm:px-4 py-1 sm:py-2 bg-green-500/20 border border-green-500/50 text-green-400 text-xs sm:text-sm md:text-base font-semibold rounded-full">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 bg-green-500/20 border border-green-500/50 text-green-400 text-xs font-semibold rounded-full">
                 ● Live
               </span>
             )}
             <div className="group relative inline-flex items-center">
-              <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-700 border border-gray-600 flex items-center justify-center cursor-help hover:bg-gray-600 transition-colors">
-                <span className="text-[10px] sm:text-xs font-bold text-gray-300">i</span>
+              <div className="w-4 h-4 rounded-full bg-panel-soft border border-neutral flex items-center justify-center cursor-help hover:border-primary transition-colors">
+                <span className="text-[9px] font-bold text-primary">i</span>
               </div>
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
-                <div className="bg-gray-900 text-gray-100 text-xs sm:text-sm px-3 py-2 rounded-lg shadow-lg border border-gray-700 whitespace-nowrap">
-                  Currently we update live prices of US stocks. Sorry for inconvenience.
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-50">
+                <div className="bg-panel text-ink text-xs px-2.5 py-1.5 rounded border border-accent whitespace-nowrap">
+                  US stocks only. Real-time updates
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-t-3 border-transparent border-t-accent"></div>
                 </div>
               </div>
             </div>
           </div>
-          <p className="text-gray-400 text-sm sm:text-base mt-2">Current Price</p>
+          <p className="text-secondary text-xs sm:text-sm mt-1.5">Current Price</p>
         </div>
 
         {/* Time Range Buttons */}
-        <div className="mt-6 sm:mt-8 md:mt-10 flex flex-wrap gap-2 sm:gap-3">
+        <div className="mt-3 sm:mt-4 flex flex-wrap gap-1.5 sm:gap-2">
           {["1d", "5d", "1mo", "3mo", "6mo", "1y"].map((r) => (
             <button
               key={r}
               onClick={() => setTimeRange(r as any)}
-              className={`px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm md:text-base transition-all duration-300 ${
+              className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded text-xs sm:text-sm font-medium transition-all duration-300 ${
                 timeRange === r
-                  ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/50"
-                  : "bg-gray-800/50 text-gray-300 border border-gray-700 hover:bg-gray-700/50 hover:border-gray-600"
+                  ? "btn-primary shadow-accent"
+                  : "bg-panel-soft text-secondary border border-accent hover:border-primary"
               }`}
             >
               {r.toUpperCase()}
@@ -337,21 +337,21 @@ const StockDetailsPage: FC = ({}) => {
         </div>
 
         {/* Chart Section */}
-        <div className="mt-6 sm:mt-8 md:mt-10 p-4 sm:p-6 md:p-8 bg-gradient-to-br from-[#1a2a3a] to-[#0f1b28] rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
-          <div className="flex items-center gap-3 mb-4">
-            <h3 className="text-lg sm:text-xl font-semibold text-white">Price Chart</h3>
+        <div className="mt-4 sm:mt-5 p-3 sm:p-4 bg-panel rounded-lg border border-accent overflow-hidden">
+          <div className="flex items-center gap-2 mb-3">
+            <h3 className="text-sm sm:text-base font-semibold text-ink">Price Chart</h3>
             {latest && (
-              <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${
+              <div className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs ${
                 (latest.price ?? 0) >= (latest.open ?? 0)
                   ? "bg-green-500/20 border border-green-500/50"
                   : "bg-red-500/20 border border-red-500/50"
               }`}>
-                <div className={`w-2.5 h-2.5 rounded-full animate-pulse ${
+                <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
                   (latest.price ?? 0) >= (latest.open ?? 0)
                     ? "bg-green-500"
                     : "bg-red-500"
                 }`}></div>
-                <span className={`text-xs sm:text-sm font-semibold ${
+                <span className={`font-semibold ${
                   (latest.price ?? 0) >= (latest.open ?? 0)
                     ? "text-green-400"
                     : "text-red-400"
@@ -361,10 +361,10 @@ const StockDetailsPage: FC = ({}) => {
               </div>
             )}
           </div>
-          <div className="h-64 sm:h-80 md:h-96">
+          <div className="h-48 sm:h-64 md:h-72">
             {loadingChart ? (
               <div className="flex items-center justify-center h-full">
-                <div className="text-gray-400 text-sm sm:text-base">Loading chart…</div>
+                <div className="text-secondary text-sm sm:text-base">Loading chart…</div>
               </div>
             ) : chartError ? (
               <div className="flex items-center justify-center h-full">
@@ -372,7 +372,7 @@ const StockDetailsPage: FC = ({}) => {
               </div>
             ) : chartData.length === 0 ? (
               <div className="flex items-center justify-center h-full">
-                <div className="text-gray-400 text-sm sm:text-base">No chart data</div>
+                <div className="text-secondary text-sm sm:text-base">No chart data</div>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -387,12 +387,12 @@ const StockDetailsPage: FC = ({}) => {
                       <stop offset="100%" stopColor="#ef4444" stopOpacity={0.05} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="time" tick={{ fontSize: 12, fill: "#9ca3af" }} />
-                  <YAxis domain={["auto", "auto"]} tick={{ fontSize: 12, fill: "#9ca3af" }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="color-mix(in srgb, var(--color-neutral) 30%, transparent)" />
+                  <XAxis dataKey="time" tick={{ fontSize: 12, fill: "var(--color-neutral)" }} />
+                  <YAxis domain={["auto", "auto"]} tick={{ fontSize: 12, fill: "var(--color-neutral)" }} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1a2a3a", border: "1px solid #374151", borderRadius: "8px" }}
-                    labelStyle={{ color: "#e5e7eb" }}
+                    contentStyle={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-primary)", borderRadius: "8px" }}
+                    labelStyle={{ color: "var(--color-text)" }}
                     formatter={(v: any) => [
                       `${profile?.currency ?? "USD"} ${Number(v).toFixed(2)}`,
                       "Price",
@@ -401,8 +401,8 @@ const StockDetailsPage: FC = ({}) => {
                       if (active && payload && payload.length > 0) {
                         const data = payload[0].payload;
                         return (
-                          <div className="bg-[#1a2a3a] border border-gray-700 rounded p-2">
-                            <p className="text-gray-300 text-xs sm:text-sm">{data.time}</p>
+                          <div className="bg-panel border border-accent rounded p-2">
+                            <p className="text-primary text-xs sm:text-sm">{data.time}</p>
                             <p className={`font-semibold ${data.isUp ? 'text-green-400' : 'text-red-400'}`}>
                               ${data.price.toFixed(2)}
                             </p>
@@ -415,7 +415,7 @@ const StockDetailsPage: FC = ({}) => {
                   <Area
                     type="monotone"
                     dataKey="price"
-                    stroke="#06b6d4"
+                    stroke="var(--color-primary)"
                     fill="url(#upGrad)"
                     strokeWidth={2.5}
                     isAnimationActive={false}
@@ -427,15 +427,10 @@ const StockDetailsPage: FC = ({}) => {
           </div>
         </div>
 
-        {/* Quick Trade Panel */}
-        <div className="mt-6 sm:mt-8 md:mt-10">
-          <QuickTradePanel symbol={symbol!} livePrice={livePrice} />
-        </div>
-
         {/* Stock Statistics Grid */}
-        <div className="mt-6 sm:mt-8 md:mt-10">
-          <h3 className="text-lg sm:text-xl font-semibold text-white mb-4">Stock Statistics</h3>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <div className="mt-4 sm:mt-5">
+          <h3 className="text-sm sm:text-base font-semibold text-ink mb-2.5">Key Statistics</h3>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             {[
               { label: "Open", value: latest?.open?.toFixed(2) },
               { label: "High", value: latest?.high?.toFixed(2) },
@@ -444,17 +439,22 @@ const StockDetailsPage: FC = ({}) => {
             ].map((stat, idx) => (
               <div
                 key={idx}
-                className="p-4 sm:p-5 md:p-6 bg-gradient-to-br from-[#1a2a3a] to-[#0f1b28] rounded-xl border border-gray-700 hover:border-gray-600 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
+                className="p-3 sm:p-4 bg-panel-soft rounded-lg border border-accent hover:border-primary transition-all duration-300"
               >
-                <div className="text-xs sm:text-sm text-gray-400 font-medium uppercase tracking-wide mb-2">
+                <div className="text-xs text-secondary font-medium uppercase tracking-wide mb-1.5">
                   {stat.label}
                 </div>
-                <div className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400">
+                <div className="text-base sm:text-lg font-bold text-primary">
                   {stat.value ?? "—"}
                 </div>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Quick Trade Panel */}
+        <div className="mt-4 sm:mt-5">
+          <QuickTradePanel symbol={symbol!} livePrice={livePrice} />
         </div>
       </div>
     </div>

@@ -26,6 +26,8 @@ export default function TradingDashboard() {
  const [posts, setPosts] = useState<Post[]>([]);
  const[Loading,setLoading] = useState(false);
   const [isPostOpen, setisPostOpen] = useState(false);
+  const [userData, setUserData] = useState<{ username: string } | null>(null);
+  const [walletData, setWalletData] = useState<{ balance: number } | null>(null);
    const Navigate = useNavigate();
 const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
   content: '',
@@ -33,6 +35,25 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
 });
 
  useEffect(() => {
+  const fetchUserDetails = async () => {
+    try {
+      const token = localStorage.getItem("Token");
+      console.log("Fetching user details with token:", token);
+      const res = await axios.get(`${BASE_URL}/user/getDetails`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log("User details response:", res.data);
+      console.log("User object:", res.data.user);
+      console.log("Username:", res.data.user?.username);
+      setUserData(res.data.user);
+      setWalletData(res.data.wallet);
+    } catch (err) {
+      console.error("Error fetching user details:", err);
+    }
+  };
+
   const fetchPosts = async () => {
     setLoading(true);
     try {
@@ -53,6 +74,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
     }
   };
 
+  fetchUserDetails();
   fetchPosts();
 }, []);
 
@@ -105,13 +127,13 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+    <div className="h-screen flex flex-col bg-page overflow-hidden">
+      <header className="bg-page border-b border-accent sticky top-0 z-50 backdrop-blur-sm bg-page/60 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between gap-2 md:gap-4">
             <div className="flex items-center space-x-1 sm:space-x-2">
-              <TrendingUp className="text-cyan-400" size={24} />
-              <span className="text-base sm:text-lg md:text-xl font-bold text-white">Paper Trades</span>
+              <TrendingUp className="text-primary" size={24} />
+              <span className="text-base sm:text-lg md:text-xl font-bold text-ink">Paper Trades</span>
             </div>
 
             <div className="flex-1 max-w-xl mx-2 sm:mx-4 md:mx-8">
@@ -121,40 +143,40 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
                   placeholder="Search stocks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-3 py-2 pl-3 pr-10 text-sm md:text-base bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500"
+                  className="w-full theme-input pr-10 text-base md:text-lg placeholder-secondary py-2.5 sm:py-3 md:py-3.5 px-4 sm:px-5"
                 />
                 <StockSearch query={searchQuery}/>
-                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-cyan-400 cursor-pointer transition">
-                  <Search size={18} />
+                <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-secondary hover:text-primary cursor-pointer transition">
+                  <Search size={20} className="md:w-5 md:h-5" />
                 </button>
               </div>
             </div>
 
             <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-6">
-              <button className="hidden sm:block relative text-slate-300 hover:text-cyan-400 cursor-pointer transition">
+                <button className="hidden sm:block relative text-secondary hover:text-primary cursor-pointer transition">
                 <MessageCircle size={20} className="md:w-6 md:h-6" />
                 <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center text-[10px] md:text-xs">
                   3
                 </span>
               </button>
 
-              <button className="hidden sm:block relative text-slate-300 hover:text-cyan-400 cursor-pointer transition">
+                <button className="hidden sm:block relative text-secondary hover:text-primary cursor-pointer transition">
                 <Bell size={20} className="md:w-6 md:h-6" />
-                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center text-[10px] md:text-xs">
+                <span className="absolute -top-1 -right-1 bg-primary text-ink text-xs rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center text-[10px] md:text-xs">
                   7
                 </span>
               </button>
 
         
               <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
-                <button className="flex items-center space-x-1 sm:space-x-2 text-white hover:text-cyan-400 cursor-pointer transition">
-                  <div className="w-7 h-7 md:w-8 md:h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
-                    <User size={16} className="md:w-[18px] md:h-[18px]" />
+                <button className="flex items-center space-x-1 sm:space-x-2 text-ink hover:text-primary cursor-pointer transition">
+                  <div className="w-7 h-7 md:w-8 md:h-8 bg-gradient-primary rounded-full flex items-center justify-center">
+                    <User size={16} className="md:w-[18px] md:h-[18px] text-ink" />
                   </div>
-                  <span className="hidden sm:inline font-medium text-sm md:text-base">John</span>
+                  <span className="hidden sm:inline font-medium text-sm md:text-base">{userData?.username || 'User'}</span>
                   <ChevronDown size={14} className="hidden sm:block md:w-4 md:h-4" />
                 </button>
-                <span className="text-green-400 font-bold text-sm md:text-lg">$10k</span>
+                <span className="text-green-400 font-bold text-sm md:text-lg">${walletData?.balance.toFixed(2) || '0.00'}</span>
               </div>
             </div>
           </div>
@@ -162,29 +184,47 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
+      <div className="flex-1 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 md:py-8 h-full overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 h-full">
    
-          <div className="lg:col-span-3 order-2 lg:order-1">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-lg md:text-xl font-bold text-white mb-3 md:mb-4">Create a Post</h2>
-              <p className="text-slate-400 text-xs md:text-sm mb-4 md:mb-6">
+            <div className="lg:col-span-3 order-2 lg:order-1 overflow-y-auto space-y-4 md:space-y-6">
+              <div className="theme-card p-4 md:p-6">
+              <h2 className="text-lg md:text-xl font-bold text-ink mb-3 md:mb-4">Create a Post</h2>
+              <p className="text-secondary text-xs md:text-sm mb-4 md:mb-6">
                 Share your trade insights or questions with the community.
               </p>
-              <button className="w-full py-2.5 md:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm md:text-base rounded-lg hover:from-cyan-400 hover:to-blue-400 font-medium transition cursor-pointer shadow-lg shadow-cyan-500/30"
+              <button className="w-full py-2.5 md:py-3 btn-primary text-sm md:text-base"
                onClick={() => setisPostOpen(true)}
               >
                 Make a Post
               </button>
             </div>
+
+            <div className="theme-card p-4 md:p-6">
+              <h2 className="text-lg md:text-xl font-bold text-ink mb-3 md:mb-4">Top Trending Today</h2>
+              <div className="space-y-3 md:space-y-4">
+                {trendingStocks.map((stock, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <div>
+                      <span className="text-primary font-medium block text-sm md:text-base">{stock.symbol}</span>
+                      <span className="text-neutral text-xs md:text-sm">${stock.price}</span>
+                    </div>
+                    <span className={`font-bold text-sm md:text-base ${stock.positive ? 'text-green-400' : 'text-red-400'}`}>
+                      {stock.change}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 {isPostOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-      <h2 className="text-base sm:text-lg font-semibold mb-3">Create Post</h2>
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="bg-panel border border-accent rounded-2xl p-4 sm:p-6 md:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <h2 className="text-base sm:text-lg font-semibold mb-3 text-ink">Create Post</h2>
 
       <textarea
-        className="w-full border rounded-lg p-2 mb-4 text-sm md:text-base min-h-[100px]"
+        className="w-full border border-accent rounded-lg p-2 mb-4 text-sm md:text-base min-h-[100px] bg-panel-soft text-ink placeholder-secondary focus:outline-none focus:border-primary"
         placeholder="What's on your mind?"
         value={formData.content}
         onChange={(e) =>
@@ -194,13 +234,13 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
 
       {/* Tags Filter */}
       <div className="mb-4">
-        <p className="text-xs sm:text-sm font-medium mb-2 text-gray-700">Select Tags:</p>
+        <p className="text-xs sm:text-sm font-medium mb-2 text-primary">Select Tags:</p>
         <div className="flex flex-wrap gap-1.5 sm:gap-2">
-          {["Stocks", "Crypto", "Options", "Trading Tips", "Investing"].map(
+              {["Stocks", "Crypto", "Options", "Trading Tips", "Investing"].map(
             (tag) => (
               <label
                 key={tag}
-                className="flex items-center space-x-1 bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-200"
+                className="flex items-center space-x-1 bg-panel-soft border border-accent px-2 py-1 rounded-full cursor-pointer hover:border-primary transition"
               >
                 <input
                   type="checkbox"
@@ -215,9 +255,9 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
                       return { ...prev, tags: newTags };
                     });
                   }}
-                  className="accent-sky-600"
+                  className="accent-primary"
                 />
-                <span className="text-xs sm:text-sm">{tag}</span>
+                <span className="text-xs sm:text-sm text-ink">{tag}</span>
               </label>
             )
           )}
@@ -228,7 +268,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
         <button
           onClick={() => setisPostOpen(false)}
           disabled={Loading}
-          className="px-3 sm:px-4 py-2 bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+          className="px-3 sm:px-4 py-2 bg-neutral text-ink rounded-md disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
         >
           Cancel
         </button>
@@ -240,9 +280,9 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
             setisPostOpen(false);
           }}
           disabled={Loading}
-          className="px-3 sm:px-4 py-2 bg-sky-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm md:text-base"
+          className="px-3 sm:px-4 py-2 btn-primary rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm md:text-base font-bold"
         >
-          {Loading && <span className="inline-block animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>}
+          {Loading && <span className="inline-block animate-spin h-4 w-4 border-2 border-ink border-t-transparent rounded-full"></span>}
           {Loading ? 'Posting...' : 'Post'}
         </button>
       </div>
@@ -251,45 +291,45 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
 )}
 
        
-          <div className="lg:col-span-6 order-1 lg:order-2">
+          <div className="lg:col-span-6 order-1 lg:order-2 overflow-y-auto pr-2">
             <div className="space-y-3 md:space-y-4">
               {Loading ? (
-                <div className="bg-slate-900 border border-slate-800 rounded-lg p-8 md:p-12 flex flex-col items-center justify-center">
-                  <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-t-2 border-b-2 border-cyan-500 mb-4"></div>
-                  <p className="text-slate-400 text-center text-sm md:text-base">Loading posts...</p>
+                <div className="theme-card p-8 md:p-12 flex flex-col items-center justify-center">
+                  <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+                  <p className="text-secondary text-center text-sm md:text-base">Loading posts...</p>
                 </div>
               ) : posts.length > 0 ? (
                 posts.map((post) => (
                   <div
                     key={post.id}
-                    className="bg-slate-900 border border-slate-800 rounded-lg p-4 md:p-6 hover:border-cyan-500 transition cursor-pointer"
+                    className="theme-card p-4 md:p-6 hover:border-accent transition cursor-pointer"
                   >
-                    <h3 className="text-white font-bold mb-2 text-sm md:text-base">{post.user.name}</h3>
-                    <p className="text-slate-300 text-sm md:text-base">{post.content}</p>
+                    <h3 className="text-ink font-bold mb-2 text-sm md:text-base">{post.user.name}</h3>
+                    <p className="text-primary text-sm md:text-base">{post.content}</p>
                   </div>
                 ))
               ) : (
-                <div className="bg-slate-900 border border-slate-800 rounded-lg p-8 md:p-12 text-center">
-                  <p className="text-slate-400 text-sm md:text-base">No posts yet. Be the first to share!</p>
+                <div className="theme-card p-8 md:p-12 text-center">
+                  <p className="text-secondary text-sm md:text-base">No posts yet. Be the first to share!</p>
                 </div>
               )}
             </div>
           </div>
 
           
-          <div className="lg:col-span-3 order-3 space-y-4 md:space-y-6">
+          <div className="lg:col-span-3 order-3 overflow-y-auto space-y-4 md:space-y-6">
             <div 
-              className="bg-slate-900 border border-slate-800 rounded-lg p-4 md:p-6 hover:border-cyan-500 transition cursor-pointer"
+              className="theme-card p-4 md:p-6 hover:border-accent transition cursor-pointer"
               onClick={() => Navigate("/portfolio")}
             >
-              <h2 className="text-lg md:text-xl font-bold text-white mb-3 md:mb-4">Today's Portfolio</h2>
+              <h2 className="text-lg md:text-xl font-bold text-ink mb-3 md:mb-4">Today's Portfolio</h2>
               <div className="space-y-2 md:space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 text-sm md:text-base">Balance:</span>
-                  <span className="text-white font-bold text-sm md:text-base">$12,500</span>
+                  <span className="text-secondary text-sm md:text-base">Balance:</span>
+                  <span className="text-ink font-bold text-sm md:text-base">$12,500</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 text-sm md:text-base">Profit/Loss:</span>
+                  <span className="text-secondary text-sm md:text-base">Profit/Loss:</span>
                   <span className="text-green-400 font-bold text-sm md:text-base">+$320</span>
                 </div>
               </div>
@@ -299,73 +339,80 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
                   e.stopPropagation();
                   Navigate("/portfolio");
                 }}
-                className="mt-3 md:mt-4 w-full text-center text-cyan-400 text-xs md:text-sm font-semibold hover:text-cyan-300"
+                className="mt-3 md:mt-4 w-full text-center text-primary text-xs md:text-sm font-semibold hover:text-secondary"
               >
                 Show full portfolio →
               </button>
             </div>
 
-    
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 md:p-6">
-              <h2 className="text-lg md:text-xl font-bold text-white mb-3 md:mb-4">Top Trending Today</h2>
-              <div className="space-y-3 md:space-y-4">
-                {trendingStocks.map((stock, index) => (
-                  <div key={index} className="flex justify-between items-center">
-                    <div>
-                      <span className="text-slate-300 font-medium block text-sm md:text-base">{stock.symbol}</span>
-                      <span className="text-slate-500 text-xs md:text-sm">${stock.price}</span>
-                    </div>
-                    <span className={`font-bold text-sm md:text-base ${stock.positive ? 'text-green-400' : 'text-red-400'}`}>
-                      {stock.change}
-                    </span>
-                  </div>
-                ))}
+            <div className="theme-card p-4 md:p-6">
+              <h2 className="text-lg md:text-xl font-bold text-ink mb-3 md:mb-4">Trading Activity</h2>
+              <p className="text-secondary text-xs md:text-sm mb-4">
+                View your complete order and trade history
+              </p>
+              <div className="space-y-3">
+                <button
+                  onClick={() => Navigate("/orders")}
+                  className="w-full py-2.5 btn-primary text-sm md:text-base flex items-center justify-between"
+                >
+                  <span>Order History</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => Navigate("/trades")}
+                  className="w-full py-2.5 btn-primary text-sm md:text-base flex items-center justify-between"
+                >
+                  <span>Trade History</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-    
-      <button className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-12 h-12 md:w-14 md:h-14 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/50 hover:from-cyan-400 hover:to-blue-400 transition cursor-pointer">
-        <MessageCircle className="text-white" size={20} />
+      <button className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-12 h-12 md:w-14 md:h-14 bg-gradient-primary rounded-full flex items-center justify-center shadow-accent hover:shadow-accent transition cursor-pointer z-40">
+        <MessageCircle className="text-ink" size={20} />
       </button>
 
 
       {showPortfolio && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-2 sm:p-4">
-          <div className="bg-slate-900 rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-slate-700">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-panel rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-accent">
             {/* Header */}
-            <div className="sticky top-0 bg-slate-900 border-b border-slate-800 p-4 md:p-6 flex justify-between items-center">
+            <div className="sticky top-0 bg-panel border-b border-accent p-4 md:p-6 flex justify-between items-center">
               <div>
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">My Portfolio</h2>
-                <p className="text-slate-400 mt-1 text-xs sm:text-sm md:text-base">Complete overview of your holdings</p>
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-ink">My Portfolio</h2>
+                <p className="text-secondary mt-1 text-xs sm:text-sm md:text-base">Complete overview of your holdings</p>
               </div>
               <button 
                 onClick={() => setShowPortfolio(false)}
-                className="text-slate-400 hover:text-white text-2xl md:text-3xl transition"
+                className="text-secondary hover:text-ink text-2xl md:text-3xl transition"
               >
                 ×
               </button>
             </div>
 
             {/* Portfolio Summary */}
-            <div className="p-4 md:p-6 border-b border-slate-800">
+            <div className="p-4 md:p-6 border-b border-accent">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-                <div className="bg-slate-800 rounded-lg p-3 md:p-4">
-                  <p className="text-slate-400 text-xs md:text-sm mb-1 md:mb-2">Total Value</p>
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-white">$29,100.75</p>
+                <div className="bg-panel-soft rounded-lg p-3 md:p-4">
+                  <p className="text-secondary text-xs md:text-sm mb-1 md:mb-2">Total Value</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-ink">$29,100.75</p>
                 </div>
-                <div className="bg-slate-800 rounded-lg p-3 md:p-4">
-                  <p className="text-slate-400 text-xs md:text-sm mb-1 md:mb-2">Cash Balance</p>
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-white">$12,500.00</p>
+                <div className="bg-panel-soft rounded-lg p-3 md:p-4">
+                  <p className="text-secondary text-xs md:text-sm mb-1 md:mb-2">Cash Balance</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-ink">$12,500.00</p>
                 </div>
-                <div className="bg-slate-800 rounded-lg p-3 md:p-4">
-                  <p className="text-slate-400 text-xs md:text-sm mb-1 md:mb-2">Total P/L</p>
+                <div className="bg-panel-soft rounded-lg p-3 md:p-4">
+                  <p className="text-secondary text-xs md:text-sm mb-1 md:mb-2">Total P/L</p>
                   <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-400">+$1,820.75</p>
                 </div>
-                <div className="bg-slate-800 rounded-lg p-3 md:p-4">
-                  <p className="text-slate-400 text-xs md:text-sm mb-1 md:mb-2">Return</p>
+                <div className="bg-panel-soft rounded-lg p-3 md:p-4">
+                  <p className="text-secondary text-xs md:text-sm mb-1 md:mb-2">Return</p>
                   <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-400">+6.68%</p>
                 </div>
               </div>
@@ -373,18 +420,18 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
 
             {/* Holdings Table */}
             <div className="p-4 md:p-6">
-              <h3 className="text-lg md:text-xl font-bold text-white mb-3 md:mb-4">Your Holdings</h3>
+              <h3 className="text-lg md:text-xl font-bold text-ink mb-3 md:mb-4">Your Holdings</h3>
               <div className="overflow-x-auto -mx-4 md:mx-0">
                 <table className="w-full min-w-[600px]">
                   <thead>
-                    <tr className="border-b border-slate-800">
-                      <th className="text-left py-2 md:py-3 px-2 md:px-4 text-slate-400 font-medium text-xs md:text-sm">Symbol</th>
-                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-slate-400 font-medium text-xs md:text-sm">Shares</th>
-                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-slate-400 font-medium text-xs md:text-sm">Avg Price</th>
-                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-slate-400 font-medium text-xs md:text-sm">Current</th>
-                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-slate-400 font-medium text-xs md:text-sm">Value</th>
-                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-slate-400 font-medium text-xs md:text-sm">P/L</th>
-                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-slate-400 font-medium text-xs md:text-sm">Action</th>
+                    <tr className="border-b border-accent">
+                      <th className="text-left py-2 md:py-3 px-2 md:px-4 text-secondary font-medium text-xs md:text-sm">Symbol</th>
+                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-secondary font-medium text-xs md:text-sm">Shares</th>
+                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-secondary font-medium text-xs md:text-sm">Avg Price</th>
+                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-secondary font-medium text-xs md:text-sm">Current</th>
+                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-secondary font-medium text-xs md:text-sm">Value</th>
+                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-secondary font-medium text-xs md:text-sm">P/L</th>
+                      <th className="text-right py-2 md:py-3 px-2 md:px-4 text-secondary font-medium text-xs md:text-sm">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -392,14 +439,14 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
                       const profitLoss = calculateProfitLoss(holding);
                       const profitLossPercent = ((holding.currentPrice - holding.avgPrice) / holding.avgPrice * 100).toFixed(2);
                       return (
-                        <tr key={index} className="border-b border-slate-800 hover:bg-slate-800 transition">
+                        <tr key={index} className="border-b border-accent hover:bg-panel-soft transition">
                           <td className="py-3 md:py-4 px-2 md:px-4">
-                            <span className="text-white font-bold text-sm md:text-base">{holding.symbol}</span>
+                            <span className="text-ink font-bold text-sm md:text-base">{holding.symbol}</span>
                           </td>
-                          <td className="py-3 md:py-4 px-2 md:px-4 text-right text-slate-300 text-xs md:text-sm">{holding.shares}</td>
-                          <td className="py-3 md:py-4 px-2 md:px-4 text-right text-slate-300 text-xs md:text-sm">${holding.avgPrice.toFixed(2)}</td>
-                          <td className="py-3 md:py-4 px-2 md:px-4 text-right text-white font-medium text-xs md:text-sm">${holding.currentPrice.toFixed(2)}</td>
-                          <td className="py-3 md:py-4 px-2 md:px-4 text-right text-white font-bold text-xs md:text-sm">${holding.totalValue.toFixed(2)}</td>
+                          <td className="py-3 md:py-4 px-2 md:px-4 text-right text-primary text-xs md:text-sm">{holding.shares}</td>
+                          <td className="py-3 md:py-4 px-2 md:px-4 text-right text-primary text-xs md:text-sm">${holding.avgPrice.toFixed(2)}</td>
+                          <td className="py-3 md:py-4 px-2 md:px-4 text-right text-ink font-medium text-xs md:text-sm">${holding.currentPrice.toFixed(2)}</td>
+                          <td className="py-3 md:py-4 px-2 md:px-4 text-right text-ink font-bold text-xs md:text-sm">${holding.totalValue.toFixed(2)}</td>
                           <td className="py-3 md:py-4 px-2 md:px-4 text-right">
                             <div className={profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}>
                               <div className="font-bold text-xs md:text-sm">{profitLoss >= 0 ? '+' : ''}${profitLoss.toFixed(2)}</div>
@@ -409,7 +456,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
                           <td className="py-3 md:py-4 px-2 md:px-4 text-right">
                             <button 
                               onClick={() => handleBuyStock(holding.symbol)}
-                              className="px-2 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xs md:text-sm rounded-lg hover:from-cyan-400 hover:to-blue-400 transition"
+                              className="px-2 md:px-4 py-1.5 md:py-2 btn-primary text-xs md:text-sm font-bold rounded-lg transition"
                             >
                               Trade
                             </button>
@@ -424,6 +471,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

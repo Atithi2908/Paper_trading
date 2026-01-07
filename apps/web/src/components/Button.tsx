@@ -19,7 +19,7 @@ const GradientButton: React.FC<GradientButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`${fullWidth ? 'w-full' : ''} px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-400 hover:to-blue-400 font-medium transition shadow-lg ${className}`}
+      className={`${fullWidth ? 'w-full' : ''} px-6 py-3 btn-primary font-bold ${className}`}
     >
       {children}
     </button>

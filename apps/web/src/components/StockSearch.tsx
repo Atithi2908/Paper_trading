@@ -46,13 +46,13 @@ export const StockSearch: React.FC<StockSearchProps> = ({ query }) => {
   if (!query) return null;
 
   return (
-    <div className="absolute top-full left-0 w-full mt-2 bg-gray-800 border border-gray-700 rounded-md shadow-lg max-h-48 sm:max-h-60 overflow-y-auto z-50">
+    <div className="absolute top-full left-0 w-full mt-2 bg-panel border border-accent rounded-lg shadow-lg max-h-60 sm:max-h-72 overflow-y-auto z-50">
       {loading && (
-        <p className="text-gray-400 text-center p-2 text-xs sm:text-sm">Loading...</p>
+        <p className="text-secondary text-center p-3 sm:p-4 text-sm">Loading...</p>
       )}
 
       {!loading && results.length === 0 && (
-        <p className="text-gray-400 text-center p-2 text-xs sm:text-sm">No results found.</p>
+        <p className="text-secondary text-center p-3 sm:p-4 text-sm">No results found.</p>
       )}
 
       {!loading &&
@@ -60,10 +60,10 @@ export const StockSearch: React.FC<StockSearchProps> = ({ query }) => {
           <div
             key={stock.symbol}
             onClick={() => navigate(`/stocks/${stock.symbol}`)}
-            className="p-2 sm:p-3 hover:bg-gray-700 cursor-pointer transition"
+            className="p-3 sm:p-4 hover:bg-panel-soft cursor-pointer transition border-b border-accent last:border-b-0"
           >
-            <p className="text-white font-medium text-sm sm:text-base">{stock.symbol}</p>
-            <p className="text-gray-400 text-xs sm:text-sm truncate">{stock.description}</p>
+            <p className="text-ink font-semibold text-base sm:text-lg">{stock.symbol}</p>
+            <p className="text-secondary text-sm truncate mt-0.5">{stock.description}</p>
           </div>
         ))}
     </div>

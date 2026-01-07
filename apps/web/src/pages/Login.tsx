@@ -16,7 +16,7 @@ export default function Login() {
        try{
         const data = await login(email,password);
           localStorage.setItem("Token", data.token);
-        console.log("Token", data.token);
+        console.log("Token after login", data.token);
       
         
       navigate("/home", {replace:true});
@@ -29,29 +29,49 @@ export default function Login() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-800 px-4">
-            <Card>
-                <div className='text-2xl sm:text-3xl md:text-4xl'>
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl mb-4 sm:mb-6">Welcome User!</h1>
-                    <div className="text-base sm:text-lg md:text-xl text-black space-y-4 sm:space-y-6">
-                        <InputField label="Email" value={email} onChange={setEmail} />
-                        <InputField label="Password" value={password} onChange={setPassword} />
-
-                        <p className='text-sm sm:text-base'>
-                            New user?
-                            <a href="/signup" className="text-blue-500 text-sm sm:text-base hover:underline ml-1">
-                                Sign Up
-                            </a>
-                        </p>
-                        <button
-                            className="w-full bg-blue-500 text-white p-2 sm:p-3 rounded-lg hover:bg-blue-600 text-sm sm:text-base"
-                            onClick={handleLogin} disabled={loading}
-                            >
-                            {loading ? 'Loading...' : 'Login'}
-                        </button>
-                    </div>
+        <div className="flex items-center justify-center min-h-screen bg-page px-4">
+            <div className="theme-card p-8 w-full max-w-md">
+                <div className='text-center mb-8'>
+                    <h1 className="text-3xl font-bold text-ink mb-2">Welcome Back!</h1>
+                    <p className="text-secondary">Sign in to your account</p>
                 </div>
-            </Card>
+                <div className="space-y-6">
+                    <div>
+                        <label className="block text-sm font-medium text-primary mb-2">Email</label>
+                        <input
+                            type="text"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-4 py-3 theme-input bg-panel text-ink"
+                            placeholder="your@example.com"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-primary mb-2">Password</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full px-4 py-3 theme-input bg-panel text-ink"
+                            placeholder="••••••••"
+                        />
+                    </div>
+
+                    <p className='text-sm text-center text-secondary'>
+                        Don't have an account?
+                        <a href="/signup" className="text-primary hover:text-contrast font-semibold ml-1">
+                            Sign Up
+                        </a>
+                    </p>
+                    <button
+                        className="w-full btn-primary p-3 font-bold"
+                        onClick={handleLogin} 
+                        disabled={loading}
+                    >
+                        {loading ? 'Loading...' : 'Login'}
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

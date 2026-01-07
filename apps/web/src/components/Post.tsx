@@ -28,12 +28,12 @@ interface PostProps {
 const sentimentColor = {
   buy: "text-green-400",
   sell: "text-red-400",
-  neutral: "text-gray-400",
+  neutral: "text-secondary",
 };
 
 const Post: React.FC<PostProps> = ({ post, onLike, onComment }) => {
   return (
-    <div className="bg-[#1B1F23] border border-gray-700 rounded-2xl p-4 shadow-md mb-4 text-gray-200 w-full max-w-xl hover:bg-[#21262C] transition-all">
+    <div className="theme-card p-4 shadow-md mb-4 text-primary w-full max-w-xl hover:bg-panel-soft transition-all">
       
       {/* HEADER */}
       <div className="flex items-center gap-3 mb-3">
@@ -46,10 +46,10 @@ const Post: React.FC<PostProps> = ({ post, onLike, onComment }) => {
           className="w-10 h-10 rounded-full object-cover"
         />
         <div className="flex flex-col">
-          <span className="font-semibold text-gray-100">
+          <span className="font-semibold text-stone-100">
             {post.user.name}
           </span>
-          <span className="text-sm text-gray-400">
+          <span className="text-sm text-secondary">
             {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
           </span>
         </div>
@@ -61,14 +61,14 @@ const Post: React.FC<PostProps> = ({ post, onLike, onComment }) => {
             {post.tags.map((tag, idx) => (
               <span
                 key={idx}
-                className="bg-sky-900/40 border border-sky-600 text-sky-300 text-xs px-2 py-1 rounded-full"
+                className="bg-panel-soft border border-contrast text-secondary text-xs px-2 py-1 rounded-full"
               >
                 {tag.startsWith("$") || tag.startsWith("#") ? tag : `#${tag}`}
               </span>
             ))}
           </div>
         )}
-        <p className="text-gray-200 whitespace-pre-wrap break-words leading-relaxed">
+        <p className="text-primary whitespace-pre-wrap break-words leading-relaxed">
           {post.content}
         </p>
       </div>
@@ -82,7 +82,7 @@ const Post: React.FC<PostProps> = ({ post, onLike, onComment }) => {
           </span>
         </div>
       )}
-      <div className="flex justify-between items-center text-gray-400 text-sm mt-4 border-t border-gray-700 pt-2">
+      <div className="flex justify-between items-center text-secondary text-sm mt-4 border-t border-accent pt-2">
         <button
           onClick={() => onLike && onLike(post.id)}
           className="flex items-center gap-2 hover:text-red-400 transition"

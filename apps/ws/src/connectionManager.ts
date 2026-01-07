@@ -88,6 +88,7 @@ function subscribeClientToSymbol(ws: WebSocket, symbol: string) {
 
   if (!finnhubSubscriptions.has(symbol)) {
     finnhubSocket.send(JSON.stringify({ type: "subscribe", symbol }));
+    
     finnhubSubscriptions.add(symbol);
   }
 
