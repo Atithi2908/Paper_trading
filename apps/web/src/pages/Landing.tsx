@@ -57,9 +57,13 @@ export default function TradingLanding() {
       const response = await axios.post(`${BASE_URL}/user${endpoint}`, payload);
 
       // Store token in localStorage
+    console.log("response from login and signup");
+      console.log(response);
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        // Redirect to home
+        
+        localStorage.setItem('Token', response.data.token);
+        const token = localStorage.getItem('Token');
+console.log("token from localStorage:", token);
         navigate('/home');
       }
     } catch (err: any) {

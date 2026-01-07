@@ -22,11 +22,14 @@ data:{email,password:hashedPassword,name},
     });
     console.log("user name is");
     console.log(user.name);
-    const token = jwt.sign({userId: user.id ,username: user.name},JWT_SECRET);
-    res.status(200).json({token});
+    const token = jwt.sign({userId: user.id },JWT_SECRET);
+    console.log("Token generated at signup:", token);
+    console.log("About to send response:", {token});
+    return res.status(200).json({token});
 }
 catch(e){
-res.status(400).json({message:"User can't be created", error:e});
+    console.error("Signup error:", e);
+    return res.status(400).json({message:"User can't be created", error:e});
 }
 };
 
@@ -42,12 +45,15 @@ export const signin = async(req:Request,res:Response)=>{
         if(!user) return res.status(400).json({message:"Invalid Credentials"});
         const isValid =await bcrypt.compare(password,user.password);
         if(!isValid) return res.status(400).json({message:"Invalid Credentials"});
-       const token = jwt.sign({userId: user.id, username:user.name},JWT_SECRET,{expiresIn: "30d"});
-        res.json({token});
+       const token = jwt.sign({userId: user.id},JWT_SECRET,{expiresIn: "30d"});
+       console.log("token create at sign in is");
+       console.log(token);
+       console.log("About to send signin response:", {token});
+        return res.json({token});
     } catch (e: any) {
   console.error("Signin error:", e);
 
-  res.status(500).json({
+  return res.status(500).json({
     message: "Signin failed",
     error: e.message,
   });
