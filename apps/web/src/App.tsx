@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import './App.css'
 
 import Home from "./pages/Home";
@@ -13,6 +13,15 @@ import LearnPage from "./pages/LearnPage";
 import FaqPage from "./pages/FaqPage";
 import SnapshotsPage from "./pages/SnapshotsPage";
 
+function ProtectedRoute() {
+  const token = localStorage.getItem("Token");
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
+}
+
 function App() {
     return( <Router>
       <Routes>
@@ -23,11 +32,13 @@ function App() {
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/snapshots" element={<SnapshotsPage />} />
         
-        <Route path="/home" element={<Home />} />
-        <Route path="/stocks/:symbol" element={<StockDetailsPage/>} />
-        <Route path="/portfolio" element={<Portfolio/>}/>
-        <Route path="/orders" element={<OrderHistory/>}/>
-        <Route path="/trades" element={<TradeHistory/>}/>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/stocks/:symbol" element={<StockDetailsPage/>} />
+          <Route path="/portfolio" element={<Portfolio/>}/>
+          <Route path="/orders" element={<OrderHistory/>}/>
+          <Route path="/trades" element={<TradeHistory/>}/>
+        </Route>
         
       </Routes>
     </Router>
