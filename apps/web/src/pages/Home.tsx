@@ -1,5 +1,5 @@
 import { useState,useEffect } from 'react';
-import { Search, MessageCircle, Bell, User, ChevronDown, TrendingUp } from 'lucide-react';
+import { Search, Bell, User, ChevronDown, TrendingUp } from 'lucide-react';
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import axios from "axios";
 import { StockSearch } from '../components/StockSearch';
@@ -126,6 +126,18 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
     return profitLoss;
   };
 
+  const walletBalance = walletData?.balance ?? 0;
+  const holdingsMarketValue = portfolioHoldings.reduce((sum, holding) => sum + holding.totalValue, 0);
+  const totalProfitLoss = portfolioHoldings.reduce((sum, holding) => sum + calculateProfitLoss(holding), 0);
+  const totalPortfolioValue = walletBalance + holdingsMarketValue;
+  const costBasis = holdingsMarketValue - totalProfitLoss;
+  const totalReturnPercent = costBasis > 0 ? (totalProfitLoss / costBasis) * 100 : 0;
+  const unreadNotifications = Math.min(posts.length, 9);
+  const lastUpdated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const formatCurrency = (value: number) =>
+    `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
   return (
     <div className="h-screen flex flex-col bg-page overflow-hidden">
       <header className="bg-page border-b border-accent sticky top-0 z-50 backdrop-blur-sm bg-page/60 flex-shrink-0">
@@ -153,17 +165,10 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
             </div>
 
             <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-6">
-                <button className="hidden sm:block relative text-secondary hover:text-primary cursor-pointer transition">
-                <MessageCircle size={20} className="md:w-6 md:h-6" />
-                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center text-[10px] md:text-xs">
-                  3
-                </span>
-              </button>
-
-                <button className="hidden sm:block relative text-secondary hover:text-primary cursor-pointer transition">
+                <button className="hidden sm:flex relative h-10 w-10 items-center justify-center rounded-xl border border-accent bg-panel text-secondary hover:text-primary hover:border-primary transition">
                 <Bell size={20} className="md:w-6 md:h-6" />
-                <span className="absolute -top-1 -right-1 bg-primary text-ink text-xs rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center text-[10px] md:text-xs">
-                  7
+                <span className="absolute -top-1.5 -right-1.5 bg-primary text-page text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center shadow-accent">
+                  {unreadNotifications}
                 </span>
               </button>
 
@@ -176,7 +181,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
                   <span className="hidden sm:inline font-medium text-sm md:text-base">{userData?.username || 'User'}</span>
                   <ChevronDown size={14} className="hidden sm:block md:w-4 md:h-4" />
                 </button>
-                <span className="text-green-400 font-bold text-sm md:text-lg">${walletData?.balance.toFixed(2) || '0.00'}</span>
+                <span className="text-green-400 font-bold text-sm md:text-lg">{formatCurrency(walletBalance)}</span>
               </div>
             </div>
           </div>
@@ -322,15 +327,15 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
               className="theme-card p-4 md:p-6 hover:border-accent transition cursor-pointer"
               onClick={() => Navigate("/portfolio")}
             >
-              <h2 className="text-lg md:text-xl font-bold text-ink mb-3 md:mb-4">Today's Portfolio</h2>
+              <h2 className="text-lg md:text-xl font-bold text-ink mb-3 md:mb-4">Portfolio Snapshot</h2>
               <div className="space-y-2 md:space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-secondary text-sm md:text-base">Balance:</span>
-                  <span className="text-ink font-bold text-sm md:text-base">$12,500</span>
+                  <span className="text-secondary text-sm md:text-base">Wallet Balance:</span>
+                  <span className="text-ink font-bold text-sm md:text-base">{formatCurrency(walletBalance)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-secondary text-sm md:text-base">Profit/Loss:</span>
-                  <span className="text-green-400 font-bold text-sm md:text-base">+$320</span>
+                  <span className="text-secondary text-sm md:text-base">Last Updated:</span>
+                  <span className="font-bold text-sm md:text-base text-primary">{lastUpdated}</span>
                 </div>
               </div>
               <button
@@ -374,11 +379,6 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
           </div>
         </div>
       </div>
-      <button className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-12 h-12 md:w-14 md:h-14 bg-gradient-primary rounded-full flex items-center justify-center shadow-accent hover:shadow-accent transition cursor-pointer z-40">
-        <MessageCircle className="text-ink" size={20} />
-      </button>
-
-
       {showPortfolio && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-panel rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-accent">
@@ -401,19 +401,23 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                 <div className="bg-panel-soft rounded-lg p-3 md:p-4">
                   <p className="text-secondary text-xs md:text-sm mb-1 md:mb-2">Total Value</p>
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-ink">$29,100.75</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-ink">{formatCurrency(totalPortfolioValue)}</p>
                 </div>
                 <div className="bg-panel-soft rounded-lg p-3 md:p-4">
                   <p className="text-secondary text-xs md:text-sm mb-1 md:mb-2">Cash Balance</p>
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-ink">$12,500.00</p>
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-ink">{formatCurrency(walletBalance)}</p>
                 </div>
                 <div className="bg-panel-soft rounded-lg p-3 md:p-4">
                   <p className="text-secondary text-xs md:text-sm mb-1 md:mb-2">Total P/L</p>
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-400">+$1,820.75</p>
+                  <p className={`text-lg sm:text-xl md:text-2xl font-bold ${totalProfitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {totalProfitLoss >= 0 ? '+' : '-'}{formatCurrency(Math.abs(totalProfitLoss))}
+                  </p>
                 </div>
                 <div className="bg-panel-soft rounded-lg p-3 md:p-4">
                   <p className="text-secondary text-xs md:text-sm mb-1 md:mb-2">Return</p>
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-400">+6.68%</p>
+                  <p className={`text-lg sm:text-xl md:text-2xl font-bold ${totalReturnPercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {totalReturnPercent >= 0 ? '+' : ''}{totalReturnPercent.toFixed(2)}%
+                  </p>
                 </div>
               </div>
             </div>

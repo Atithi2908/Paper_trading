@@ -1,7 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { FaFacebookMessenger, FaBell, FaUser, FaCaretDown, FaSearch } from 'react-icons/fa';
+import { FaBell, FaUser, FaCaretDown, FaSearch } from 'react-icons/fa';
 
-export default function Topbar({ siteName = 'TradeInCase', balance = 10000 }) {
+interface TopbarProps {
+  siteName?: string;
+  balance?: number;
+  notificationCount?: number;
+}
+
+export default function Topbar({ siteName = 'TradeInCase', balance = 0, notificationCount = 0 }: TopbarProps) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -40,16 +46,11 @@ export default function Topbar({ siteName = 'TradeInCase', balance = 10000 }) {
 
     
     <div className="flex items-center gap-4 mr-2">
-
-     
-      <button className="relative p-2 rounded-lg hover:bg-panel transition">
-        <FaFacebookMessenger size={20} className="text-secondary hover:text-primary transition" />
-        <span className="absolute top-0 right-0 -mt-1 -mr-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-semibold leading-none text-white bg-red-600 rounded-full">3</span>
-      </button>
-
-      <button className="relative p-2 rounded-lg hover:bg-panel transition">
-        <FaBell size={20} className="text-secondary hover:text-primary transition" />
-        <span className="absolute top-0 right-0 -mt-1 -mr-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-semibold leading-none text-white bg-primary rounded-full">5</span>
+      <button className="relative p-2 h-10 w-10 flex items-center justify-center rounded-xl border border-accent bg-panel text-secondary hover:text-primary hover:border-primary transition">
+        <FaBell size={18} className="text-secondary hover:text-primary transition" />
+        <span className="absolute -top-1 -right-1 inline-flex h-5 w-5 items-center justify-center text-xs font-semibold leading-none text-page bg-primary rounded-full shadow-accent">
+          {Math.min(notificationCount, 99)}
+        </span>
       </button>
 
       <div className="relative" ref={dropdownRef}>
@@ -89,7 +90,7 @@ export default function Topbar({ siteName = 'TradeInCase', balance = 10000 }) {
 
     {/* Right: Balance */}
     <div className="text-lg font-bold text-primary mr-4">
-      ${balance.toLocaleString()}
+      ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
     </div>
   </div>
 </header>

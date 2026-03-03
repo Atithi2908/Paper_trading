@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 interface Stock {
@@ -314,7 +314,7 @@ console.log("token from localStorage:", token);
       {/* NAVIGATION */}
       <nav className="px-4 sm:px-8 py-4 sm:py-6 flex items-center justify-between border-b border-accent backdrop-blur-sm bg-page/50 sticky top-0 z-50 fade-in-up">
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-primary rounded-lg flex items-center justify-center hover:rotate-12 transition-transform">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
             <svg className="w-5 h-5 sm:w-6 sm:h-6 text-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -322,9 +322,11 @@ console.log("token from localStorage:", token);
           <span className="text-lg sm:text-2xl font-bold text-ink">TradeInCase</span>
         </div>
         <div className="flex items-center gap-3 sm:gap-8">
-          <a href="#" className="hidden md:block text-secondary hover:text-ink transition-all hover:scale-110">Exchange</a>
-          <a href="#" className="hidden md:block text-secondary hover:text-ink transition-all hover:scale-110">Derivatives</a>
-          <a href="#" className="hidden md:block text-secondary hover:text-ink transition-all hover:scale-110">Learn</a>
+          <Link to="/exchange" className="hidden md:block text-secondary hover:text-ink transition-all hover:scale-110">Exchange</Link>
+          <Link to="/derivatives" className="hidden md:block text-secondary hover:text-ink transition-all hover:scale-110">Derivatives</Link>
+          <Link to="/learn" className="hidden md:block text-secondary hover:text-ink transition-all hover:scale-110">Learn</Link>
+          <Link to="/faq" className="hidden md:block text-secondary hover:text-ink transition-all hover:scale-110">FAQ</Link>
+          <Link to="/snapshots" className="hidden md:block text-secondary hover:text-ink transition-all hover:scale-110">Snapshots</Link>
           <button onClick={() => { setIsSignup(false); setShowAuthModal(true); }} className="px-3 sm:px-5 py-1.5 sm:py-2 border border-primary hover:border-accent text-ink rounded-lg transition-all hover:scale-105 text-sm sm:text-base">
             Log In
           </button>
@@ -358,14 +360,8 @@ console.log("token from localStorage:", token);
             Leverage AI-driven insights and institutional-grade tools to stay ahead.
             Trade crypto, forex, and equities on one unified platform.
           </p>
-          <div className="flex flex-col items-center gap-4 fade-in-up delay-300">
-            <button className="px-8 py-4 btn-primary text-lg font-bold flex items-center gap-2">
-              Launch Terminal
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </button>
-            <p className="text-sm text-accent" ></p>
+          <div className="fade-in-up delay-300">
+            <p className="text-sm text-ink">Built for fast paper trading and real-time insights.</p>
           </div>
         </div>
 
@@ -554,28 +550,46 @@ console.log("token from localStorage:", token);
       {/* AUTH MODAL */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="theme-card w-full max-w-md p-8 relative">
+          <div className="theme-card w-full max-w-lg overflow-hidden relative">
             <button 
               onClick={() => { setShowAuthModal(false); resetForm(); }}
-              className="absolute top-4 right-4 text-secondary hover:text-ink text-2xl"
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-panel-soft text-secondary hover:text-ink text-2xl transition"
             >
               ×
             </button>
-            
-            <h2 className="text-3xl font-bold text-ink mb-2">
-              {isSignup ? 'Create Account' : 'Log In'}
-            </h2>
-            <p className="text-secondary mb-6">
-              {isSignup ? 'Join TradeInCase today' : 'Welcome back'}
-            </p>
+
+            <div className="p-6 border-b border-accent bg-panel-soft/60">
+              <h2 className="text-3xl font-bold text-ink mb-2">
+                {isSignup ? 'Create Account' : 'Log In'}
+              </h2>
+              <p className="text-secondary mb-5">
+                {isSignup ? 'Join TradeInCase today' : 'Welcome back'}
+              </p>
+              <div className="grid grid-cols-2 gap-2 bg-page p-1 rounded-lg border border-accent">
+                <button
+                  type="button"
+                  onClick={() => { setIsSignup(false); resetForm(); }}
+                  className={`py-2 rounded-md text-sm font-semibold transition ${!isSignup ? 'btn-primary' : 'text-secondary hover:text-ink'}`}
+                >
+                  Log In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setIsSignup(true); resetForm(); }}
+                  className={`py-2 rounded-md text-sm font-semibold transition ${isSignup ? 'btn-primary' : 'text-secondary hover:text-ink'}`}
+                >
+                  Sign Up
+                </button>
+              </div>
+            </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-lg text-sm">
+              <div className="mx-6 mt-5 p-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-lg text-sm">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 p-6">
               {isSignup && (
                 <div>
                   <label className="block text-sm font-medium text-accent mb-2">
@@ -587,7 +601,7 @@ console.log("token from localStorage:", token);
                     value={formData.name || ''}
                     onChange={handleInputChange}
                     required
-                    className="theme-input"
+                    className="theme-input w-full px-4 py-3"
                     placeholder="John Doe"
                   />
                 </div>
@@ -603,7 +617,7 @@ console.log("token from localStorage:", token);
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="theme-input"
+                  className="theme-input w-full px-4 py-3"
                   placeholder="you@example.com"
                 />
               </div>
@@ -618,7 +632,7 @@ console.log("token from localStorage:", token);
                   value={formData.password}
                   onChange={handleInputChange}
                   required
-                  className="theme-input"
+                  className="theme-input w-full px-4 py-3"
                   placeholder="••••••••"
                 />
               </div>
@@ -630,17 +644,21 @@ console.log("token from localStorage:", token);
               >
                 {loading ? 'Processing...' : (isSignup ? 'Create Account' : 'Log In')}
               </button>
-            </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-secondary">
+              <p className="mt-4 text-center text-secondary">
                 {isSignup ? 'Already have an account?' : 'Don\'t have an account?'}{' '}
                 <button
+                  type="button"
                   onClick={toggleAuthMode}
                   className="text-primary hover:text-accent font-semibold transition"
                 >
                   {isSignup ? 'Log In' : 'Sign Up'}
                 </button>
+              </p>
+            </form>
+
+            <div className="px-6 pb-6">
+              <p className="text-xs text-secondary text-center">
+                By continuing, you agree to TradeInCase terms and security guidelines.
               </p>
             </div>
           </div>
