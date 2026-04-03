@@ -202,7 +202,7 @@ const StockDetailsHeader: FC<{ symbol?: string }> = ({ symbol }) => {
   const { profile, loading, error } = useCompanyProfile(symbol);
 
   if (loading) return <div className="text-sm md:text-base text-secondary">Loading company info…</div>;
-  if (error) return <div className="text-sm md:text-base text-red-400">Error loading company info: {error}</div>;
+  if (error) return <div className="text-sm md:text-base text-red-400">Sorry, this information is not currently available.</div>;
 
   return (
     <header className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-panel rounded-lg border border-accent">
@@ -234,7 +234,7 @@ const StockDetailsPage: FC = ({}) => {
   console.log(`Params recieved from stockDetails Page is ${symbol}` );
   const [timeRange, setTimeRange] = useState<
     "1d" | "5d" | "1mo" | "3mo" | "6mo" | "1y"
-  >("1y");
+  >("1d");
 
   const { profile } = useCompanyProfile(symbol);
   const { data: chartData, loading: loadingChart, error: chartError } =
@@ -296,7 +296,7 @@ const StockDetailsPage: FC = ({}) => {
         {/* Price Display Section */}
         <div className="mt-4 sm:mt-5 p-3 sm:p-4 theme-card">
           <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
-            <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-ink">
               {profile?.currency ?? "USD"} {displayedPrice.toFixed(2)}
             </div>
             {livePrice && (
@@ -368,7 +368,7 @@ const StockDetailsPage: FC = ({}) => {
               </div>
             ) : chartError ? (
               <div className="flex items-center justify-center h-full">
-                <div className="text-red-400 text-sm sm:text-base">Error: {chartError}</div>
+                <div className="text-red-400 text-sm sm:text-base">Sorry, this information is not currently available.</div>
               </div>
             ) : chartData.length === 0 ? (
               <div className="flex items-center justify-center h-full">
@@ -394,7 +394,7 @@ const StockDetailsPage: FC = ({}) => {
                     contentStyle={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-primary)", borderRadius: "8px" }}
                     labelStyle={{ color: "var(--color-text)" }}
                     formatter={(v: any) => [
-                      `${profile?.currency ?? "USD"} ${Number(v).toFixed(2)}`,
+                      `${Number(v).toFixed(2)}`,
                       "Price",
                     ]}
                     content={({ active, payload }: any) => {
@@ -404,7 +404,7 @@ const StockDetailsPage: FC = ({}) => {
                           <div className="bg-panel border border-accent rounded p-2">
                             <p className="text-primary text-xs sm:text-sm">{data.time}</p>
                             <p className={`font-semibold ${data.isUp ? 'text-green-400' : 'text-red-400'}`}>
-                              ${data.price.toFixed(2)}
+                              {data.price.toFixed(2)}
                             </p>
                           </div>
                         );

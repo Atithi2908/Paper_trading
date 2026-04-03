@@ -1,5 +1,5 @@
 import { useState,useEffect } from 'react';
-import { Search, Bell, User, ChevronDown, TrendingUp } from 'lucide-react';
+import { Search, User, TrendingUp } from 'lucide-react';
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import axios from "axios";
 import { StockSearch } from '../components/StockSearch';
@@ -105,9 +105,9 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
   };
 
   const trendingStocks = [
+    { symbol: 'AAPL', change: '+2.1%', positive: true, price: 178.32 },
     { symbol: 'TSLA', change: '+5.2%', positive: true, price: 245.67 },
-    { symbol: 'BTC', change: '+3.8%', positive: true, price: 43250.50 },
-    { symbol: 'AAPL', change: '+2.1%', positive: true, price: 178.32 }
+    { symbol: 'JPM', change: '+1.5%', positive: true, price: 150.25 }
   ];
 
   const portfolioHoldings = [
@@ -132,7 +132,6 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
   const totalPortfolioValue = walletBalance + holdingsMarketValue;
   const costBasis = holdingsMarketValue - totalProfitLoss;
   const totalReturnPercent = costBasis > 0 ? (totalProfitLoss / costBasis) * 100 : 0;
-  const unreadNotifications = Math.min(posts.length, 9);
   const lastUpdated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const formatCurrency = (value: number) =>
@@ -165,22 +164,16 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
             </div>
 
             <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-6">
-                <button className="hidden sm:flex relative h-10 w-10 items-center justify-center rounded-xl border border-accent bg-panel text-secondary hover:text-primary hover:border-primary transition">
-                <Bell size={20} className="md:w-6 md:h-6" />
-                <span className="absolute -top-1.5 -right-1.5 bg-primary text-page text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center shadow-accent">
-                  {unreadNotifications}
-                </span>
-              </button>
-
-        
               <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
                 <button className="flex items-center space-x-1 sm:space-x-2 text-ink hover:text-primary cursor-pointer transition">
                   <div className="w-7 h-7 md:w-8 md:h-8 bg-gradient-primary rounded-full flex items-center justify-center">
                     <User size={16} className="md:w-[18px] md:h-[18px] text-ink" />
                   </div>
                   <span className="hidden sm:inline font-medium text-sm md:text-base">{userData?.username || 'User'}</span>
-                  <ChevronDown size={14} className="hidden sm:block md:w-4 md:h-4" />
                 </button>
+                <a href="/" className="block px-4 py-2 text-secondary hover:text-red-400 hover:bg-panel-soft transition">
+                    Logout
+                </a>
                 <span className="text-green-400 font-bold text-sm md:text-lg">{formatCurrency(walletBalance)}</span>
               </div>
             </div>
@@ -210,14 +203,11 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
               <h2 className="text-lg md:text-xl font-bold text-ink mb-3 md:mb-4">Top Trending Today</h2>
               <div className="space-y-3 md:space-y-4">
                 {trendingStocks.map((stock, index) => (
-                  <div key={index} className="flex justify-between items-center">
+                  <div key={index} className="flex justify-between items-center cursor-pointer" onClick={() => Navigate(`/stocks/${stock.symbol}`)}>
                     <div>
                       <span className="text-primary font-medium block text-sm md:text-base">{stock.symbol}</span>
                       <span className="text-neutral text-xs md:text-sm">${stock.price}</span>
                     </div>
-                    <span className={`font-bold text-sm md:text-base ${stock.positive ? 'text-green-400' : 'text-red-400'}`}>
-                      {stock.change}
-                    </span>
                   </div>
                 ))}
               </div>
@@ -358,7 +348,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
               <div className="space-y-3">
                 <button
                   onClick={() => Navigate("/orders")}
-                  className="w-full py-2.5 btn-primary text-sm md:text-base flex items-center justify-between"
+                  className="w-full py-2.5 btn-primary text-sm md:text-base flex items-center justify-center"
                 >
                   <span>Order History</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -367,7 +357,7 @@ const [formData, setFormData] = useState<{ content: string; tags: string[] }>({
                 </button>
                 <button
                   onClick={() => Navigate("/trades")}
-                  className="w-full py-2.5 btn-primary text-sm md:text-base flex items-center justify-between"
+                  className="w-full py-2.5 btn-primary text-sm md:text-base flex items-center justify-center"
                 >
                   <span>Trade History</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

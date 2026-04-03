@@ -72,7 +72,7 @@ export default function TradeHistory() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-ink mb-2">
             Trade History
           </h1>
           <p className="text-secondary text-sm sm:text-base">Complete record of all executed trades</p>

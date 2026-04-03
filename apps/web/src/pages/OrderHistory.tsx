@@ -86,7 +86,7 @@ export default function OrderHistory() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-ink mb-2">
             Order History
           </h1>
           <p className="text-secondary text-sm sm:text-base">View all your trading orders and their status</p>

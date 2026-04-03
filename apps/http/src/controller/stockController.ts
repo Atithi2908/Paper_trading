@@ -182,10 +182,16 @@ export const getOrCreateStock = async (req: Request, res: Response) => {
 export const getStockChartData = async (req:Request, res:Response) => {
   const { symbol } = req.params;
   const range = req.query.range || "1mo"; 
+  let interval = "1d";
+  if (range === "1d") {
+    interval = "1m";
+  } else if (range === "5d") {
+    interval = "1h";
+  }
 
   try {
     
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=${range}`;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=${interval}&range=${range}`;
     const response = await axios.get(url);
 
     const result = response.data.chart.result[0];
@@ -195,7 +201,12 @@ export const getStockChartData = async (req:Request, res:Response) => {
 
     const formattedData = timestamps.map((ts:number, i:number) => {
       const date = new Date(ts * 1000);
-      const time = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      let time;
+      if (range === "1d") {
+        time = date.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' });
+      } else {
+        time = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      }
 
       return {
         time,

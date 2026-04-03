@@ -5,7 +5,7 @@ WORKDIR /app
 # Enable pnpm
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
-# Copy workspace files
+
 COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY apps ./apps

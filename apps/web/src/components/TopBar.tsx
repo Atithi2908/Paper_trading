@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { FaBell, FaUser, FaCaretDown, FaSearch } from 'react-icons/fa';
+import { FaUser, FaCaretDown, FaSearch } from 'react-icons/fa';
 
 interface TopbarProps {
   siteName?: string;
   balance?: number;
-  notificationCount?: number;
 }
 
-export default function Topbar({ siteName = 'TradeInCase', balance = 0, notificationCount = 0 }: TopbarProps) {
+export default function Topbar({ siteName = 'TradeInCase', balance = 0 }: TopbarProps) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -46,13 +45,6 @@ export default function Topbar({ siteName = 'TradeInCase', balance = 0, notifica
 
     
     <div className="flex items-center gap-4 mr-2">
-      <button className="relative p-2 h-10 w-10 flex items-center justify-center rounded-xl border border-accent bg-panel text-secondary hover:text-primary hover:border-primary transition">
-        <FaBell size={18} className="text-secondary hover:text-primary transition" />
-        <span className="absolute -top-1 -right-1 inline-flex h-5 w-5 items-center justify-center text-xs font-semibold leading-none text-page bg-primary rounded-full shadow-accent">
-          {Math.min(notificationCount, 99)}
-        </span>
-      </button>
-
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setOpen(!open)}

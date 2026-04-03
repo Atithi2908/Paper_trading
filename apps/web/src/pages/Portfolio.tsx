@@ -85,7 +85,7 @@ export default function Portfolio() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-ink mb-2">
             My Portfolio
           </h1>
           <p className="text-secondary text-sm sm:text-base">Track your investments and wallet balance</p>
@@ -94,15 +94,15 @@ export default function Portfolio() {
         {/* Wallet Card */}
         <div className="theme-card p-6 sm:p-8 shadow-accent mb-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <span className="text-ink text-xl font-bold">₹</span>
+            <div className="w-12 h-12 bg-contrast rounded-lg flex items-center justify-center">
+              <span className="text-white text-xl font-bold">₹</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-ink">Wallet Balance</h2>
           </div>
           
           <div className="space-y-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-green-400 to-orange-500 bg-clip-text text-transparent">
+              <span className="text-4xl sm:text-5xl font-bold text-contrast">
                 ₹{portfolio.wallet?.balance.toFixed(2)}
               </span>
             </div>
